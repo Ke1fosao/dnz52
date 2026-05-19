@@ -1,0 +1,453 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ group.name }} | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root { --group-color: {{ group.color }}; }
+
+    /* Hero групи */
+    .group-hero {
+        position: relative;
+        min-height: 360px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+    }
+    .group-hero-bg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, {{ group.color }} 0%, {{ group.color }}bb 100%);
+    }
+    .group-hero-bg img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        opacity: 0.25;
+    }
+    .group-hero-content {
+        position: relative;
+        z-index: 2;
+        padding: 60px 0 40px;
+        width: 100%;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+    .group-title { font-size: 2.2rem; font-weight: 800; color: white; margin-bottom: 8px; }
+    .group-subtitle { color: rgba(255,255,255,0.85); font-size: 1rem; }
+    .group-motto-hero {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(8px);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 25px;
+        font-style: italic;
+        font-size: 1rem;
+        margin-top: 12px;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    .age-badge-hero {
+        display: inline-block;
+        background: white;
+        color: {{ group.color }};
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 4px 14px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+    }
+
+    /* Кольорова лінія */
+    .color-line { height: 6px; background: {{ group.color }}; }
+
+    /* Секції */
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 3px solid {{ group.color }};
+        display: inline-block;
+    }
+
+    /* Картка персоналу */
+    .staff-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+    }
+    .staff-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 35px rgba(0,0,0,0.13);
+    }
+    .staff-photo-wrap {
+        position: relative;
+        height: 260px;
+        overflow: hidden;
+    }
+    .staff-photo-wrap img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        object-position: center top;
+    }
+    .staff-photo-placeholder {
+        width: 100%; height: 100%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 5rem;
+        background: linear-gradient(135deg, {{ group.color }}22, {{ group.color }}44);
+    }
+    .staff-role-ribbon {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        color: white;
+        padding: 20px 16px 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .staff-body { padding: 20px; }
+    .staff-name { font-size: 1.05rem; font-weight: 700; color: #2C3E50; margin-bottom: 14px; }
+    .staff-info-item {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+        font-size: 0.88rem;
+        color: #555;
+        line-height: 1.5;
+    }
+    .staff-info-item .info-icon {
+        width: 28px; height: 28px;
+        border-radius: 8px;
+        background: {{ group.color }}18;
+        display: flex; align-items: center; justify-content: center;
+        color: {{ group.color }};
+        flex-shrink: 0;
+        font-size: 0.9rem;
+        margin-top: 1px;
+    }
+    .staff-motto-block {
+        margin-top: 14px;
+        padding: 12px 16px;
+        background: {{ group.color }}0f;
+        border-left: 3px solid {{ group.color }};
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        font-size: 0.9rem;
+        color: #444;
+        line-height: 1.6;
+    }
+
+    /* Помічник */
+    .assistant-card {
+        background: white;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .assistant-photo {
+        width: 90px; height: 90px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 3px solid {{ group.color }}44;
+    }
+    .assistant-photo-placeholder {
+        width: 90px; height: 90px;
+        border-radius: 50%;
+        background: {{ group.color }}22;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+    }
+
+    /* Альбом */
+    .album-link-card {
+        display: block;
+        background: linear-gradient(135deg, {{ group.color }}, {{ group.color }}cc);
+        border-radius: 16px;
+        padding: 32px;
+        text-decoration: none;
+        color: white;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        box-shadow: 0 4px 20px {{ group.color }}55;
+    }
+    .album-link-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 35px {{ group.color }}66;
+        color: white;
+    }
+
+    /* Сайдбар */
+    .sidebar-widget {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+    }
+    .sidebar-widget .widget-header {
+        background: linear-gradient(135deg, {{ group.color }}, {{ group.color }}cc);
+        color: white;
+        padding: 14px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .group-nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 18px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        font-size: 0.9rem;
+        transition: background 0.2s;
+    }
+    .group-nav-link:last-child { border-bottom: none; }
+    .group-nav-link:hover { background: #f8f9fa; color: {{ group.color }}; }
+    .group-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    @media (max-width: 576px) {
+        .group-title { font-size: 1.6rem; }
+        .assistant-card { flex-direction: column; align-items: center; text-align: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══ HERO ═══ -->
+<section class="group-hero">
+    <div class="group-hero-bg">
+        {% if group.cover %}<img src="{{ group.cover.url }}" alt="{{ group.name }}">{% endif %}
+    </div>
+    <div class="group-hero-content">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-3">
+                    <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'groups:groups_list' %}">Групи</a></li>
+                    <li class="breadcrumb-item active">{{ group.name }}</li>
+                </ol>
+            </nav>
+
+            {% if group.age_group %}
+            <div class="age-badge-hero">{{ group.get_age_group_display }}</div>
+            {% endif %}
+
+            <h1 class="group-title">{{ group.name }}</h1>
+
+            {% if group.description %}
+            <p class="group-subtitle">{{ group.description }}</p>
+            {% endif %}
+
+            {% if group.motto %}
+            <div class="group-motto-hero">
+                <i class="bi bi-chat-quote me-2"></i>{{ group.motto }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+<div class="color-line"></div>
+
+<!-- ═══ ОСНОВНИЙ КОНТЕНТ ═══ -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Ліва колонка -->
+            <div class="col-lg-8">
+
+                <!-- Вихователі -->
+                {% if teachers %}
+                <div class="mb-5">
+                    <h2 class="section-title"><i class="bi bi-person-heart me-2"></i>Вихователі</h2>
+                    <div class="row g-4">
+                        {% for teacher in teachers %}
+                        <div class="col-md-6">
+                            <div class="staff-card">
+                                <div class="staff-photo-wrap">
+                                    {% if teacher.photo %}
+                                        <img src="{{ teacher.photo.url }}" alt="{{ teacher.full_name }}">
+                                    {% else %}
+                                        <div class="staff-photo-placeholder">👩‍🏫</div>
+                                    {% endif %}
+                                    <div class="staff-role-ribbon">
+                                        <i class="bi bi-patch-check me-1"></i>{{ teacher.get_role_display }}
+                                    </div>
+                                </div>
+                                <div class="staff-body">
+                                    <div class="staff-name">{{ teacher.full_name }}</div>
+
+                                    {% if teacher.birth_date %}
+                                    <div class="staff-info-item">
+                                        <div class="info-icon"><i class="bi bi-calendar3"></i></div>
+                                        <div>
+                                            <div style="font-size:0.75rem; color:#aaa; font-weight:600; text-transform:uppercase; letter-spacing:.4px;">Дата народження</div>
+                                            {{ teacher.birth_date|date:"d.m.Y" }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if teacher.education %}
+                                    <div class="staff-info-item">
+                                        <div class="info-icon"><i class="bi bi-mortarboard"></i></div>
+                                        <div>
+                                            <div style="font-size:0.75rem; color:#aaa; font-weight:600; text-transform:uppercase; letter-spacing:.4px;">Освіта</div>
+                                            {{ teacher.education }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if teacher.experience %}
+                                    <div class="staff-info-item">
+                                        <div class="info-icon"><i class="bi bi-award"></i></div>
+                                        <div>
+                                            <div style="font-size:0.75rem; color:#aaa; font-weight:600; text-transform:uppercase; letter-spacing:.4px;">Педагогічний стаж</div>
+                                            {{ teacher.experience }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if teacher.motto %}
+                                    <div class="staff-motto-block">
+                                        <i class="bi bi-quote me-1"></i>{{ teacher.motto }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Помічник вихователя -->
+                {% if assistants %}
+                <div class="mb-5">
+                    <h2 class="section-title"><i class="bi bi-person me-2"></i>Помічник вихователя</h2>
+                    <div class="d-flex flex-column gap-3">
+                        {% for assistant in assistants %}
+                        <div class="assistant-card">
+                            {% if assistant.photo %}
+                                <img src="{{ assistant.photo.url }}" class="assistant-photo" alt="{{ assistant.full_name }}">
+                            {% else %}
+                                <div class="assistant-photo-placeholder">👤</div>
+                            {% endif %}
+                            <div class="flex-grow-1">
+                                <div class="fw-bold fs-6 mb-1">{{ assistant.full_name }}</div>
+                                <div class="text-muted mb-2" style="font-size:0.83rem;">{{ assistant.get_role_display }}</div>
+
+                                <div class="d-flex flex-wrap gap-3" style="font-size:0.85rem; color:#555;">
+                                    {% if assistant.birth_date %}
+                                    <span><i class="bi bi-calendar3 me-1 text-primary"></i>{{ assistant.birth_date|date:"d.m.Y" }}</span>
+                                    {% endif %}
+                                    {% if assistant.education %}
+                                    <span><i class="bi bi-mortarboard me-1 text-primary"></i>{{ assistant.education }}</span>
+                                    {% endif %}
+                                    {% if assistant.experience %}
+                                    <span><i class="bi bi-award me-1 text-primary"></i>{{ assistant.experience }}</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if assistant.motto %}
+                                <div class="staff-motto-block mt-2">
+                                    <i class="bi bi-quote me-1"></i>{{ assistant.motto }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Фотоальбом -->
+                {% if group.album %}
+                <div class="mb-2">
+                    <h2 class="section-title"><i class="bi bi-images me-2"></i>Фотоальбом групи</h2>
+                    <a href="{% url 'gallery:album_detail' group.album.slug %}" class="album-link-card">
+                        <i class="bi bi-images" style="font-size:2.5rem; display:block; margin-bottom:12px; opacity:0.9;"></i>
+                        <div style="font-size:1.2rem; font-weight:700; margin-bottom:6px;">{{ group.album.title }}</div>
+                        <div style="opacity:0.8; font-size:0.9rem;">
+                            <i class="bi bi-camera me-1"></i>{{ group.album.photos.count }} фото
+                            &nbsp;·&nbsp; Переглянути альбом
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </div>
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+
+                <!-- Інші групи -->
+                {% if other_groups %}
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-grid me-2"></i>Інші групи
+                    </div>
+                    <div class="bg-white">
+                        {% for g in other_groups %}
+                        <a href="{% url 'groups:group_detail' g.slug %}" class="group-nav-link">
+                            <span class="d-flex align-items-center gap-2">
+                                <span class="group-dot" style="background: {{ g.color }};"></span>
+                                {{ g.name }}
+                            </span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Швидка інфо -->
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-info-circle me-2"></i>Інформація
+                    </div>
+                    <div class="bg-white p-3">
+                        <ul class="list-unstyled mb-0" style="font-size:0.9rem;">
+                            {% if group.age_group %}
+                            <li class="mb-2"><i class="bi bi-people me-2 text-primary"></i>{{ group.get_age_group_display }}</li>
+                            {% endif %}
+                            <li class="mb-2"><i class="bi bi-person-heart me-2 text-primary"></i>{{ teachers.count }} вихователь{{ teachers.count|pluralize:",,ів" }}</li>
+                            <li class="mb-2"><i class="bi bi-person me-2 text-primary"></i>{{ assistants.count }} помічник{{ assistants.count|pluralize:",,ів" }}</li>
+                            {% if group.album %}
+                            <li><i class="bi bi-images me-2 text-primary"></i>Є фотоальбом</li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Назад -->
+                <a href="{% url 'groups:groups_list' %}" class="btn btn-outline-primary w-100">
+                    <i class="bi bi-arrow-left me-2"></i>Всі групи
+                </a>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

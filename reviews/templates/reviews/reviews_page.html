@@ -1,0 +1,375 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Відгуки | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    padding: 60px 0 40px;
+}
+.breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+.breadcrumb-item.active { color: white; }
+.breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+.stats-bar {
+    background: white; border-radius: 16px; padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 36px;
+    display: flex; align-items: center; gap: 40px; flex-wrap: wrap;
+}
+.stat-avg .avg-num { font-size: 3.5rem; font-weight: 800; color: #2C3E50; line-height: 1; }
+.stat-avg .avg-stars { font-size: 1.3rem; color: #f5a623; letter-spacing: 2px; }
+.stat-avg .avg-label { font-size: 0.78rem; color: #aaa; margin-top: 4px; }
+.stat-bars { flex: 1; min-width: 200px; }
+.rating-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; font-size: 0.82rem; }
+.rating-bar-row .stars { color: #f5a623; width: 70px; flex-shrink: 0; }
+.rating-bar-track { flex: 1; height: 8px; background: #f0f0f0; border-radius: 4px; overflow: hidden; }
+.rating-bar-fill { height: 100%; background: linear-gradient(to right, #f5a623, #ffd700); border-radius: 4px; }
+.rating-bar-row .count { color: #aaa; width: 20px; text-align: right; }
+.stat-total .total-num { font-size: 2rem; font-weight: 700; color: #4A90E2; }
+.stat-total .total-label { font-size: 0.78rem; color: #aaa; }
+
+.review-card {
+    background: white; border-radius: 14px; padding: 22px 24px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.07); margin-bottom: 18px;
+    border-left: 4px solid #4A90E2;
+}
+.review-card.r5 { border-left-color: #27ae60; }
+.review-card.r4 { border-left-color: #2ecc71; }
+.review-card.r3 { border-left-color: #f39c12; }
+.review-card.r2 { border-left-color: #e67e22; }
+.review-card.r1 { border-left-color: #e74c3c; }
+.review-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+.review-author { font-weight: 700; font-size: 1rem; color: #2C3E50; }
+.review-group { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
+.review-stars { font-size: 1rem; color: #f5a623; }
+.review-date { font-size: 0.75rem; color: #bbb; }
+.review-text { font-size: 0.92rem; color: #555; line-height: 1.7; }
+.quote-icon { font-size: 2rem; color: #e8f4fd; float: left; margin-right: 8px; line-height: 1; }
+
+.review-form-card { background: white; border-radius: 16px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 4px solid #4A90E2; }
+.form-control, .form-select { border-radius: 10px; border: 2px solid #e8e8e8; font-size: 0.9rem; }
+.form-control:focus, .form-select:focus { border-color: #4A90E2; box-shadow: 0 0 0 3px rgba(74,144,226,0.12); }
+
+.star-rating { display: flex; flex-direction: row-reverse; gap: 4px; }
+.star-rating input { display: none; }
+.star-rating label { font-size: 1.8rem; color: #ddd; cursor: pointer; transition: color 0.15s; line-height: 1; }
+.star-rating input:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label { color: #f5a623; }
+
+.success-msg { background: linear-gradient(135deg, #d4edda, #c3e6cb); border: 1px solid #b1dfbb; border-radius: 12px; padding: 20px 24px; text-align: center; color: #155724; }
+
+.sidebar-widget { border-radius: 12px; overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.08); margin-bottom: 24px; }
+.widget-header { background: linear-gradient(135deg, #4A90E2, #357ABD); color: white; padding: 14px 20px; font-weight: 600; }
+.sidebar-link { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: #333; font-size: 0.88rem; transition: background 0.2s; }
+.sidebar-link:last-child { border-bottom: none; }
+.sidebar-link:hover { background: #f0f7ff; color: #4A90E2; }
+
+/* Фільтр і сортування */
+.filter-toolbar {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+.filter-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: #8B98AB;
+    margin-right: 6px;
+}
+.filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #F0F4F9;
+    color: #6C7A89;
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+.filter-chip:hover {
+    background: #E5EFFA;
+    color: #4A90E2;
+}
+.filter-chip.active {
+    background: #4A90E2;
+    color: #fff;
+    border-color: #357ABD;
+    box-shadow: 0 4px 12px rgba(74,144,226,0.30);
+}
+.filter-chip .star { color: #FFB84D; }
+.filter-chip.active .star { color: #FFD93D; }
+.filter-chip .count {
+    background: rgba(255,255,255,0.65);
+    color: #2C3E50;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+.filter-chip.active .count {
+    background: rgba(255,255,255,0.30);
+    color: #fff;
+}
+.filter-sort-select {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2px solid #E5ECF4;
+    background: #fff;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #2C3E50;
+    cursor: pointer;
+    min-width: 170px;
+}
+.filter-sort-select:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+}
+.results-info {
+    font-size: 0.88rem;
+    color: #6C7A89;
+    margin-bottom: 12px;
+}
+.results-info strong { color: #2C3E50; }
+
+@media (max-width: 576px) {
+    .stats-bar { flex-direction: column; gap: 20px; }
+    .filter-toolbar { flex-direction: column; align-items: stretch; }
+    .filter-chips { justify-content: center; }
+    .filter-sort-select { width: 100%; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Відгуки</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1"><i class="bi bi-chat-quote me-2"></i>Відгуки про ЗДО №52</h1>
+        <p class="text-white-50 mb-0">Що кажуть батьки про наш заклад</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-lg-8">
+
+                <!-- Статистика -->
+                {% if stats.total > 0 %}
+                <div class="stats-bar">
+                    <div class="stat-avg text-center">
+                        <div class="avg-num">{{ stats.avg }}</div>
+                        <div class="avg-stars">★★★★★</div>
+                        <div class="avg-label">Середня оцінка</div>
+                    </div>
+                    <div class="stat-bars">
+                        <div class="rating-bar-row">
+                            <span class="stars">★★★★★</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:{% widthratio stats.five stats.total 100 %}%"></div></div>
+                            <span class="count">{{ stats.five }}</span>
+                        </div>
+                        <div class="rating-bar-row">
+                            <span class="stars">★★★★☆</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:{% widthratio stats.four stats.total 100 %}%"></div></div>
+                            <span class="count">{{ stats.four }}</span>
+                        </div>
+                        <div class="rating-bar-row">
+                            <span class="stars">★★★☆☆</span>
+                            <div class="rating-bar-track"><div class="rating-bar-fill" style="width:{% widthratio stats.three stats.total 100 %}%"></div></div>
+                            <span class="count">{{ stats.three }}</span>
+                        </div>
+                    </div>
+                    <div class="stat-total text-center">
+                        <div class="total-num">{{ stats.total }}</div>
+                        <div class="total-label">відгуків</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Фільтр і сортування -->
+                {% if stats.total > 0 %}
+                <form method="get" id="filterForm" class="filter-toolbar">
+                    <div class="d-flex align-items-center flex-wrap gap-2">
+                        <span class="filter-label"><i class="bi bi-funnel-fill me-1"></i>Зірки:</span>
+                        <div class="filter-chips">
+                            <a href="?{% if sort != 'newest' %}sort={{ sort }}{% endif %}"
+                               class="filter-chip {% if filter_stars == 'all' %}active{% endif %}">
+                                Усі <span class="count">{{ stats.total }}</span>
+                            </a>
+                            <a href="?stars=5{% if sort != 'newest' %}&sort={{ sort }}{% endif %}"
+                               class="filter-chip {% if filter_stars == '5' %}active{% endif %}">
+                                <span class="star">★</span>5 <span class="count">{{ stats.five }}</span>
+                            </a>
+                            <a href="?stars=4{% if sort != 'newest' %}&sort={{ sort }}{% endif %}"
+                               class="filter-chip {% if filter_stars == '4' %}active{% endif %}">
+                                <span class="star">★</span>4 <span class="count">{{ stats.four }}</span>
+                            </a>
+                            <a href="?stars=3{% if sort != 'newest' %}&sort={{ sort }}{% endif %}"
+                               class="filter-chip {% if filter_stars == '3' %}active{% endif %}">
+                                <span class="star">★</span>3 <span class="count">{{ stats.three }}</span>
+                            </a>
+                            <a href="?stars=2{% if sort != 'newest' %}&sort={{ sort }}{% endif %}"
+                               class="filter-chip {% if filter_stars == '2' %}active{% endif %}">
+                                <span class="star">★</span>2 <span class="count">{{ stats.two }}</span>
+                            </a>
+                            <a href="?stars=1{% if sort != 'newest' %}&sort={{ sort }}{% endif %}"
+                               class="filter-chip {% if filter_stars == '1' %}active{% endif %}">
+                                <span class="star">★</span>1 <span class="count">{{ stats.one }}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ms-auto d-flex align-items-center gap-2">
+                        <span class="filter-label"><i class="bi bi-sort-down me-1"></i>Сортувати:</span>
+                        <select name="sort" class="filter-sort-select" onchange="document.getElementById('filterForm').submit()">
+                            <option value="newest"  {% if sort == 'newest' %}selected{% endif %}>Спочатку нові</option>
+                            <option value="oldest"  {% if sort == 'oldest' %}selected{% endif %}>Спочатку старі</option>
+                            <option value="highest" {% if sort == 'highest' %}selected{% endif %}>Найвищий рейтинг</option>
+                            <option value="lowest"  {% if sort == 'lowest' %}selected{% endif %}>Найнижчий рейтинг</option>
+                        </select>
+                        {% if filter_stars != 'all' %}
+                        <input type="hidden" name="stars" value="{{ filter_stars }}">
+                        {% endif %}
+                    </div>
+                </form>
+
+                {% if filter_stars != 'all' %}
+                <div class="results-info">
+                    <i class="bi bi-info-circle me-1 text-primary"></i>
+                    Показано <strong>{{ filtered_count }}</strong> з {{ stats.total }} відгуків — фільтр: <strong>{{ filter_stars }} ★</strong>
+                    <a href="?{% if sort != 'newest' %}sort={{ sort }}{% endif %}" class="ms-2"><i class="bi bi-x-circle"></i> скинути</a>
+                </div>
+                {% endif %}
+                {% endif %}
+
+                <!-- Відгуки -->
+                {% if reviews %}
+                    {% for review in reviews %}
+                    <div class="review-card r{{ review.rating }}">
+                        <div class="review-header">
+                            <div>
+                                <div class="review-author"><i class="bi bi-person-circle me-1 text-primary"></i>{{ review.author }}</div>
+                                {% if review.child_group %}<div class="review-group"><i class="bi bi-people me-1"></i>{{ review.child_group }}</div>{% endif %}
+                            </div>
+                            <div class="text-end">
+                                <div class="review-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                                <div class="review-date">{{ review.created_at|date:"d.m.Y" }}</div>
+                            </div>
+                        </div>
+                        <div class="review-text"><i class="bi bi-quote quote-icon"></i>{{ review.text }}</div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center py-4 mb-4 bg-white rounded shadow-sm" style="padding:2.5rem 1rem;">
+                    <i class="bi bi-chat-square-text fs-1 text-muted d-block mb-3"></i>
+                    {% if filter_stars != 'all' %}
+                        <h5 class="text-muted">Немає відгуків з оцінкою <strong>{{ filter_stars }} ★</strong></h5>
+                        <a href="?{% if sort != 'newest' %}sort={{ sort }}{% endif %}" class="btn btn-outline-primary btn-sm mt-2">
+                            <i class="bi bi-arrow-left me-1"></i>Показати всі відгуки
+                        </a>
+                    {% else %}
+                        <h5 class="text-muted">Відгуків ще немає — будьте першим!</h5>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Форма -->
+                <div class="review-form-card mt-4">
+                    {% if submitted %}
+                    <div class="success-msg">
+                        <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                        <strong>Дякуємо за ваш відгук!</strong><br>
+                        <span style="font-size:0.9rem;">Він з'явиться після перевірки адміністратором.</span>
+                    </div>
+                    {% else %}
+                    <h4 class="mb-4"><i class="bi bi-pencil-square me-2 text-primary"></i>Залишити відгук</h4>
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Ваше ім'я *</label>
+                                <input type="text" name="author" class="form-control" placeholder="Марія Петренко" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Група дитини</label>
+                                <input type="text" name="child_group" class="form-control" placeholder="Наприклад: Сонечко">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Оцінка *</label><br>
+                                <div class="star-rating">
+                                    <input type="radio" name="rating" id="s5" value="5" checked><label for="s5">★</label>
+                                    <input type="radio" name="rating" id="s4" value="4"><label for="s4">★</label>
+                                    <input type="radio" name="rating" id="s3" value="3"><label for="s3">★</label>
+                                    <input type="radio" name="rating" id="s2" value="2"><label for="s2">★</label>
+                                    <input type="radio" name="rating" id="s1" value="1"><label for="s1">★</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Ваш відгук *</label>
+                                <textarea name="text" class="form-control" rows="4" placeholder="Поділіться враженнями..." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-send me-2"></i>Надіслати
+                                </button>
+                                <small class="text-muted ms-3">Відгук з'явиться після модерації</small>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+                <div class="sidebar-widget">
+                    <div class="widget-header"><i class="bi bi-info-circle me-2"></i>Про нас</div>
+                    <div class="bg-white">
+                        <a href="{% url 'main:page_detail' 'about' %}" class="sidebar-link"><span><i class="bi bi-building me-2 text-primary"></i>Про заклад</span><i class="bi bi-chevron-right text-muted"></i></a>
+                        <a href="{% url 'news:news_list' %}" class="sidebar-link"><span><i class="bi bi-newspaper me-2 text-primary"></i>Новини</span><i class="bi bi-chevron-right text-muted"></i></a>
+                        <a href="{% url 'gallery:gallery_list' %}" class="sidebar-link"><span><i class="bi bi-images me-2 text-primary"></i>Галерея</span><i class="bi bi-chevron-right text-muted"></i></a>
+                        <a href="{% url 'main:contacts' %}" class="sidebar-link"><span><i class="bi bi-geo-alt me-2 text-primary"></i>Контакти</span><i class="bi bi-chevron-right text-muted"></i></a>
+                    </div>
+                </div>
+                <div class="sidebar-widget">
+                    <div class="widget-header"><i class="bi bi-shield-check me-2"></i>Модерація</div>
+                    <div class="bg-white p-3">
+                        <p class="text-muted mb-0" style="font-size:0.85rem; line-height:1.6;">
+                            <i class="bi bi-info-circle text-primary me-1"></i>
+                            Всі відгуки проходять модерацію. Ми публікуємо чесні відгуки — як позитивні, так і негативні.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

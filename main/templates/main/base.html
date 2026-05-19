@@ -1,0 +1,244 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ЗДО №52 | Рівне{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Свій CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Верхня панель -->
+    <div class="top-bar py-2">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <a href="tel:+380362265434" class="top-link me-3"><i class="bi bi-telephone-fill me-1"></i>+380 (362) 26-54-34</a>
+                    <a href="mailto:dnz52@rv.ua" class="top-link"><i class="bi bi-envelope-fill me-1"></i>dnz52@rv.ua</a>
+                </div>
+                <div class="col-md-6 text-end">
+                    <span class="me-3 d-none d-md-inline-block"><i class="bi bi-geo-alt-fill me-1"></i>вул. Приходька, 12, м. Рівне</span>
+                    <a href="https://www.facebook.com/groups/619594565112638/" target="_blank" rel="noopener" class="top-icon me-2" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                    <a href="https://www.instagram.com/zdo52_cv/" target="_blank" rel="noopener" class="top-icon me-2" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.youtube.com/@%D0%90%D0%BB%D1%96%D0%BD%D0%B0%D0%94%D0%B0%D0%BD%D1%87%D1%83%D0%BA-%D1%833%D1%82/featured" target="_blank" rel="noopener" class="top-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Навігація -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top main-navbar">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'main:home' %}">
+                <span class="brand-logo me-2" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
+                        <defs>
+                            <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#4A90E2"/>
+                                <stop offset="100%" stop-color="#50E3C2"/>
+                            </linearGradient>
+                        </defs>
+                        <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#brandGrad)"/>
+                        <path d="M32 16 L46 26 V46 H38 V36 H26 V46 H18 V26 Z" fill="#fff"/>
+                        <circle cx="32" cy="42" r="3" fill="#FFD93D"/>
+                    </svg>
+                </span>
+                <div>
+                    <div class="fw-bold brand-title">ЗДО №52</div>
+                    <small class="brand-sub">м. Рівне</small>
+                </div>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'main:home' %}"><i class="bi bi-house-door d-lg-none me-1"></i>Головна</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'news:news_list' %}">Новини</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="aboutDropdown" role="button" data-bs-toggle="dropdown">
+                            Про заклад
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'about' %}"><i class="bi bi-info-circle me-2 text-primary"></i>Про нас</a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'history' %}"><i class="bi bi-book me-2 text-primary"></i>Історія</a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'staff' %}"><i class="bi bi-people me-2 text-primary"></i>Керівництво</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="groupsDropdown" role="button" data-bs-toggle="dropdown">
+                            Групи
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'groups:groups_list' %}"><i class="bi bi-grid me-2 text-primary"></i>Всі групи</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            {% load groups_tags %}
+                            {% get_groups as nav_groups %}
+                            {% for g in nav_groups %}
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center gap-2" href="{% url 'groups:group_detail' g.slug %}">
+                                    <span style="width:10px;height:10px;border-radius:50%;background:{{ g.color }};flex-shrink:0;"></span>
+                                    {{ g.name }}
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li><span class="dropdown-item text-muted">Групи не додані</span></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Педагогам
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'specialists:specialist_page' 'methodical' %}"><i class="bi bi-journal-bookmark me-2 text-primary"></i>Методична робота</a></li>
+                            <li><a class="dropdown-item" href="{% url 'specialists:specialist_page' 'physical' %}"><i class="bi bi-heart-pulse me-2 text-primary"></i>Фізкультурно-оздоровча</a></li>
+                            <li><a class="dropdown-item" href="{% url 'specialists:specialist_page' 'music' %}"><i class="bi bi-music-note-beamed me-2 text-primary"></i>Музичний керівник</a></li>
+                            <li><a class="dropdown-item" href="{% url 'specialists:specialist_page' 'psychologist' %}"><i class="bi bi-person-hearts me-2 text-primary"></i>Психолог</a></li>
+                            <li><a class="dropdown-item" href="{% url 'specialists:specialist_page' 'medical' %}"><i class="bi bi-bandaid me-2 text-primary"></i>Медична сестра</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'attestation' %}"><i class="bi bi-patch-check me-2 text-primary"></i>Атестація</a></li>
+                            <li><a class="dropdown-item" href="{% url 'circles:circles_page' %}"><i class="bi bi-stars me-2 text-primary"></i>Гурткова робота</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Батькам
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'parents' %}"><i class="bi bi-people me-2 text-primary"></i>Батьківська сторінка</a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'legal' %}"><i class="bi bi-shield-check me-2 text-primary"></i>Правова освіта</a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'logoped' %}"><i class="bi bi-chat-dots me-2 text-primary"></i>Поради логопеда</a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'psychologist' %}"><i class="bi bi-person-hearts me-2 text-primary"></i>Поради психолога</a></li>
+                            <li><a class="dropdown-item" href="{% url 'main:page_detail' 'medical' %}"><i class="bi bi-bandaid me-2 text-primary"></i>Поради медсестри</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="https://drive.google.com/drive/folders/0B8wiwE5qLWoYfk9Tc0UxSlN4aFlIT21Oc2JPbHJjZmVlUExUeXdrY0UwNHJFUHczZ1V1LVk?usp=sharing" target="_blank" rel="noopener"><i class="bi bi-google me-2 text-primary"></i>Майбутні першокласники</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Інше
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'gallery:gallery_list' %}"><i class="bi bi-images me-2 text-primary"></i>Галерея</a></li>
+                            <li><a class="dropdown-item" href="{% url 'documents:documents_list' %}"><i class="bi bi-file-earmark-text me-2 text-primary"></i>Документи</a></li>
+                            <li><a class="dropdown-item" href="{% url 'reviews:reviews_page' %}"><i class="bi bi-chat-heart me-2 text-primary"></i>Відгуки</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'main:contacts' %}"><i class="bi bi-geo-alt me-2 text-primary"></i>Контакти</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Контент -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Футер -->
+    <footer class="site-footer pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="footer-title">
+                        <span class="brand-logo-sm me-2" aria-hidden="true">
+                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+                                <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#brandGrad)"/>
+                                <path d="M32 16 L46 26 V46 H38 V36 H26 V46 H18 V26 Z" fill="#fff"/>
+                                <circle cx="32" cy="42" r="3" fill="#FFD93D"/>
+                                <defs>
+                                    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0%" stop-color="#4A90E2"/>
+                                        <stop offset="100%" stop-color="#50E3C2"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </span>
+                        ЗДО №52
+                    </h5>
+                    <p class="footer-text">Заклад Дошкільної Освіти №52<br>м. Рівне — затишний дім для вашої дитини.</p>
+                    <div class="social-links mt-3">
+                        <a href="https://www.facebook.com/groups/619594565112638/" target="_blank" rel="noopener" class="social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="https://www.instagram.com/zdo52_cv/" target="_blank" rel="noopener" class="social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.youtube.com/@%D0%90%D0%BB%D1%96%D0%BD%D0%B0%D0%94%D0%B0%D0%BD%D1%87%D1%83%D0%BA-%D1%833%D1%82/featured" target="_blank" rel="noopener" class="social-link" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-title">Корисні посилання</h5>
+                    <ul class="footer-list">
+                        <li><a href="{% url 'main:page_detail' 'about' %}"><i class="bi bi-chevron-right me-1"></i>Про заклад</a></li>
+                        <li><a href="{% url 'news:news_list' %}"><i class="bi bi-chevron-right me-1"></i>Новини</a></li>
+                        <li><a href="{% url 'gallery:gallery_list' %}"><i class="bi bi-chevron-right me-1"></i>Галерея</a></li>
+                        <li><a href="{% url 'documents:documents_list' %}"><i class="bi bi-chevron-right me-1"></i>Документи</a></li>
+                        <li><a href="{% url 'reviews:reviews_page' %}"><i class="bi bi-chevron-right me-1"></i>Відгуки</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="footer-title">Розділи</h5>
+                    <ul class="footer-list">
+                        <li><a href="{% url 'groups:groups_list' %}"><i class="bi bi-chevron-right me-1"></i>Групи</a></li>
+                        <li><a href="{% url 'circles:circles_page' %}"><i class="bi bi-chevron-right me-1"></i>Гуртки</a></li>
+                        <li><a href="{% url 'main:page_detail' 'parents' %}"><i class="bi bi-chevron-right me-1"></i>Батькам</a></li>
+                        <li><a href="{% url 'main:contacts' %}"><i class="bi bi-chevron-right me-1"></i>Контакти</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="footer-title">Контакти</h5>
+                    <ul class="footer-contacts">
+                        <li><i class="bi bi-geo-alt-fill"></i> вул. Приходька, 12, м. Рівне</li>
+                        <li><i class="bi bi-telephone-fill"></i> <a href="tel:+380362265434">+380 (362) 26-54-34</a></li>
+                        <li><i class="bi bi-envelope-fill"></i> <a href="mailto:dnz52@rv.ua">dnz52@rv.ua</a></li>
+                        <li><i class="bi bi-clock-fill"></i> Пн–Пт: 07:00–19:00</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="footer-divider">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
+                <p class="footer-copyright mb-2 mb-md-0">&copy; {% now "Y" %} ЗДО №52 м. Рівне. Всі права захищені.</p>
+                <p class="footer-copyright mb-0">
+                    <i class="bi bi-heart-fill text-danger me-1"></i>З турботою про наших найменших
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Кнопка нагору -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Нагору">
+        <i class="bi bi-chevron-up"></i>
+    </button>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Свій JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

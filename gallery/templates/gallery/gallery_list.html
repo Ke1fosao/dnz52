@@ -1,0 +1,194 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Фотогалерея | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* Картка альбому */
+    .album-card {
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: none;
+        transition: transform 0.35s ease, box-shadow 0.35s ease;
+        cursor: pointer;
+    }
+    .album-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+    .album-cover-wrap {
+        position: relative;
+        overflow: hidden;
+        height: 230px;
+    }
+    .album-cover-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .album-card:hover .album-cover-wrap img {
+        transform: scale(1.08);
+    }
+    .album-cover-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #e8f4fd 0%, #c8e4f8 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #4A90E2;
+    }
+    .album-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, transparent 60%);
+        opacity: 0;
+        transition: opacity 0.35s ease;
+        display: flex;
+        align-items: flex-end;
+        padding: 20px;
+    }
+    .album-card:hover .album-overlay {
+        opacity: 1;
+    }
+    .album-overlay-btn {
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .album-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0,0,0,0.55);
+        color: white;
+        font-size: 0.75rem;
+        padding: 4px 10px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
+    }
+    .album-body {
+        padding: 16px 20px 20px;
+    }
+    .album-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #2C3E50;
+    }
+    .album-meta {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .no-albums { padding: 100px 0; }
+
+    /* Лічильник в заголовку */
+    .albums-count-badge {
+        background: rgba(255,255,255,0.2);
+        color: white;
+        font-size: 0.85rem;
+        padding: 4px 14px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-top: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Фотогалерея</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1">
+            <i class="bi bi-images me-2"></i>Фотогалерея
+        </h1>
+        <p class="text-white-50 mb-2">Фотоальбоми ЗДО №52</p>
+        {% if albums %}
+        <span class="albums-count-badge">{{ albums|length }} альбом{{ albums|length|pluralize:",,ів" }}</span>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Альбоми -->
+<section class="py-5">
+    <div class="container">
+
+        {% if albums %}
+        <div class="row g-4">
+            {% for album in albums %}
+            <div class="col-sm-6 col-lg-4 col-xl-3">
+                <a href="{% url 'gallery:album_detail' album.slug %}" class="text-decoration-none">
+                    <div class="album-card">
+                        <div class="album-cover-wrap">
+                            {% if album.cover %}
+                                <img src="{{ album.cover.url }}" alt="{{ album.title }}">
+                            {% else %}
+                                <div class="album-cover-placeholder">
+                                    <i class="bi bi-image fs-1 mb-2"></i>
+                                    <span class="small">Немає обкладинки</span>
+                                </div>
+                            {% endif %}
+
+                            <!-- Кількість фото -->
+                            <span class="album-badge">
+                                <i class="bi bi-camera me-1"></i>{{ album.photos.count }}
+                            </span>
+
+                            <!-- Ховер-оверлей -->
+                            <div class="album-overlay">
+                                <div class="album-overlay-btn">
+                                    <i class="bi bi-folder2-open"></i> Відкрити альбом
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="album-body">
+                            <div class="album-title">{{ album.title }}</div>
+                            <div class="album-meta">
+                                <i class="bi bi-calendar3 me-1"></i>{{ album.created_at|date:"d.m.Y" }}
+                                {% if album.description %}
+                                <span class="ms-2 text-truncate d-block mt-1">{{ album.description|truncatechars:55 }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="text-center no-albums">
+            <i class="bi bi-images fs-1 text-muted d-block mb-3"></i>
+            <h4 class="text-muted">Альбоми ще не додані</h4>
+            <p class="text-muted">Незабаром тут з'являться фотоматеріали</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

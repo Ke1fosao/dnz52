@@ -1,0 +1,298 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ news.title }} | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+    }
+    .breadcrumb-item.active {
+        color: white;
+    }
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.6);
+    }
+    .news-article {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.1);
+    }
+    .news-hero-img {
+        width: 100%;
+        max-height: 480px;
+        object-fit: cover;
+    }
+    .news-content-body {
+        padding: 40px;
+    }
+    .news-meta span {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-right: 20px;
+    }
+    .news-meta span i {
+        margin-right: 4px;
+        color: #4A90E2;
+    }
+    .news-content-body .news-text {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #444;
+    }
+    .news-content-body .news-text img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 15px 0;
+    }
+    .sidebar-widget {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+    }
+    .sidebar-widget .widget-header {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        color: white;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    .related-news-item {
+        display: flex;
+        gap: 12px;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        transition: background 0.2s;
+    }
+    .related-news-item:last-child {
+        border-bottom: none;
+    }
+    .related-news-item:hover {
+        background: #f8f9fa;
+        color: #4A90E2;
+    }
+    .related-news-item img {
+        width: 70px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 6px;
+        flex-shrink: 0;
+    }
+    .related-news-item .related-thumb-placeholder {
+        width: 70px;
+        height: 50px;
+        background: #e8f4fd;
+        border-radius: 6px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .related-news-item .title {
+        font-size: 0.85rem;
+        font-weight: 500;
+        line-height: 1.4;
+    }
+    .related-news-item .date {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 4px;
+    }
+    .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .share-facebook { background: #1877f2; color: white; }
+    .share-facebook:hover { background: #166fe5; color: white; }
+    .share-telegram { background: #0088cc; color: white; }
+    .share-telegram:hover { background: #0077bb; color: white; }
+    .share-copy { background: #f0f0f0; color: #333; }
+    .share-copy:hover { background: #e0e0e0; color: #333; }
+    .category-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        transition: background 0.2s, color 0.2s;
+    }
+    .category-link:hover {
+        background: #f8f9fa;
+        color: #4A90E2;
+    }
+    .category-link:last-child { border-bottom: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'news:news_list' %}">Новини</a></li>
+                {% if news.category %}
+                <li class="breadcrumb-item">
+                    <a href="{% url 'news:news_by_category' news.category.slug %}">{{ news.category.name }}</a>
+                </li>
+                {% endif %}
+                <li class="breadcrumb-item active">{{ news.title|truncatechars:50 }}</li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Стаття -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+
+            <!-- Основний контент -->
+            <div class="col-lg-8">
+                <div class="news-article bg-white">
+
+                    {% if news.image %}
+                    <img src="{{ news.image.url }}" class="news-hero-img" alt="{{ news.title }}">
+                    {% endif %}
+
+                    <div class="news-content-body">
+
+                        <!-- Категорія -->
+                        {% if news.category %}
+                        <a href="{% url 'news:news_by_category' news.category.slug %}"
+                           class="badge bg-primary text-decoration-none mb-3 d-inline-block" style="font-size:0.8rem;">
+                            {{ news.category.name }}
+                        </a>
+                        {% endif %}
+
+                        <!-- Заголовок -->
+                        <h1 class="fw-bold mb-3" style="font-size: 1.8rem; line-height: 1.3;">
+                            {{ news.title }}
+                        </h1>
+
+                        <!-- Мета -->
+                        <div class="news-meta mb-4 pb-4 border-bottom">
+                            <span><i class="bi bi-calendar3"></i>{{ news.created_at|date:"d.m.Y" }}</span>
+                            <span><i class="bi bi-clock"></i>{{ news.created_at|date:"H:i" }}</span>
+                            <span><i class="bi bi-eye"></i>{{ news.views }} переглядів</span>
+                        </div>
+
+                        <!-- Текст -->
+                        <div class="news-text">
+                            {{ news.content|safe }}
+                        </div>
+
+                        <!-- Поширити -->
+                        <div class="mt-5 pt-4 border-top">
+                            <span class="fw-600 me-3 text-muted" style="font-weight:600;">Поділитись:</span>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                               target="_blank" class="share-btn share-facebook me-2">
+                                <i class="bi bi-facebook"></i> Facebook
+                            </a>
+                            <a href="https://t.me/share/url?url={{ request.build_absolute_uri }}&text={{ news.title }}"
+                               target="_blank" class="share-btn share-telegram me-2">
+                                <i class="bi bi-telegram"></i> Telegram
+                            </a>
+                            <button onclick="copyLink()" class="share-btn share-copy border-0 cursor-pointer" id="copyBtn">
+                                <i class="bi bi-link-45deg"></i> Копіювати
+                            </button>
+                        </div>
+
+                        <!-- Назад -->
+                        <div class="mt-4">
+                            <a href="{% url 'news:news_list' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left me-2"></i>Всі новини
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="col-lg-4 mt-4 mt-lg-0">
+
+                <!-- Категорії -->
+                <div class="sidebar-widget">
+                    <div class="widget-header"><i class="bi bi-tags me-2"></i>Категорії</div>
+                    <div class="bg-white">
+                        <a href="{% url 'news:news_list' %}" class="category-link">
+                            <span>Всі новини</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        {% for category in categories %}
+                        <a href="{% url 'news:news_by_category' category.slug %}" class="category-link">
+                            <span {% if news.category and news.category.slug == category.slug %}class="text-primary fw-bold"{% endif %}>
+                                {{ category.name }}
+                            </span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Останні новини -->
+                {% if related_news %}
+                <div class="sidebar-widget">
+                    <div class="widget-header"><i class="bi bi-clock-history me-2"></i>Останні новини</div>
+                    <div class="bg-white">
+                        {% for item in related_news %}
+                        <a href="{% url 'news:news_detail' item.slug %}" class="related-news-item">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                            {% else %}
+                                <div class="related-thumb-placeholder">
+                                    <i class="bi bi-newspaper text-primary"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <div class="title">{{ item.title|truncatechars:60 }}</div>
+                                <div class="date"><i class="bi bi-calendar3 me-1"></i>{{ item.created_at|date:"d.m.Y" }}</div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.innerHTML = '<i class="bi bi-check2"></i> Скопійовано!';
+        btn.style.background = '#d4edda';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-link-45deg"></i> Копіювати';
+            btn.style.background = '';
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

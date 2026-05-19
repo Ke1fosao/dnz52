@@ -1,0 +1,446 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ page.title }} | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* Основна картка сторінки */
+    .page-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+    .page-hero-img {
+        width: 100%;
+        max-height: 420px;
+        object-fit: cover;
+    }
+    .page-content-body {
+        padding: 40px 44px;
+    }
+    .page-content-body h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 8px;
+    }
+    .page-updated {
+        font-size: 0.82rem;
+        color: #aaa;
+        margin-bottom: 28px;
+        padding-bottom: 24px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    /* Стилі для вмісту CKEditor */
+    .page-text {
+        font-size: 1.05rem;
+        line-height: 1.85;
+        color: #444;
+    }
+    .page-text h2 { font-size: 1.5rem; font-weight: 700; margin-top: 36px; margin-bottom: 14px; color: #2C3E50; }
+    .page-text h3 { font-size: 1.25rem; font-weight: 600; margin-top: 28px; margin-bottom: 12px; color: #2C3E50; }
+    .page-text p { margin-bottom: 16px; }
+    .page-text img { max-width: 100%; border-radius: 10px; margin: 16px 0; }
+    .page-text ul, .page-text ol { margin-bottom: 16px; padding-left: 24px; }
+    .page-text li { margin-bottom: 6px; }
+    .page-text blockquote {
+        border-left: 4px solid #4A90E2;
+        padding: 12px 20px;
+        background: #f0f7ff;
+        border-radius: 0 8px 8px 0;
+        margin: 20px 0;
+        color: #555;
+        font-style: italic;
+    }
+    .page-text table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 0.95rem;
+    }
+    .page-text table th {
+        background: #4A90E2;
+        color: white;
+        padding: 10px 14px;
+        text-align: left;
+    }
+    .page-text table td {
+        padding: 9px 14px;
+        border-bottom: 1px solid #eee;
+    }
+    .page-text table tr:nth-child(even) td {
+        background: #f8f9fa;
+    }
+
+    /* Сайдбар */
+    .sidebar-widget {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+    }
+    .sidebar-widget .widget-header {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        color: white;
+        padding: 15px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 11px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        font-size: 0.9rem;
+        transition: background 0.2s, color 0.2s;
+    }
+    .sidebar-link:last-child { border-bottom: none; }
+    .sidebar-link:hover, .sidebar-link.active {
+        background: #f0f7ff;
+        color: #4A90E2;
+    }
+    .sidebar-link.active { font-weight: 600; color: #4A90E2; }
+
+    /* Галерея сторінки */
+    .page-gallery {
+        border-top: 2px solid #f0f0f0;
+        padding-top: 28px;
+    }
+    .page-gallery-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 18px;
+    }
+    .page-gallery-item {
+        margin: 0;
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .page-gallery-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.15);
+    }
+    .page-gallery-item img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        display: block;
+        cursor: zoom-in;
+        transition: transform 0.4s;
+    }
+    .page-gallery-item:hover img { transform: scale(1.04); }
+    .page-gallery-item figcaption {
+        padding: 12px 16px;
+        background: linear-gradient(135deg, #F0F7FF, #E5EFFA);
+        color: #4A5568;
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    /* Page lightbox */
+    .page-lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 25, 40, 0.92);
+        z-index: 1080;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+    .page-lightbox.open { display: flex; }
+    .page-lightbox img {
+        max-width: 95vw;
+        max-height: 92vh;
+        border-radius: 10px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    .page-lightbox .lb-close {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .page-lightbox .lb-close:hover { background: rgba(255,255,255,0.30); }
+
+    @media (max-width: 767px) {
+        .page-content-body { padding: 24px 20px; }
+        .page-content-body h1 { font-size: 1.5rem; }
+        .page-gallery-item img { height: 200px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">{{ page.title }}</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-0">{{ page.title }}</h1>
+    </div>
+</section>
+
+<!-- Контент -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Основний контент -->
+            <div class="col-lg-8">
+                <div class="page-card">
+                    {% if page.image %}
+                    <img src="{{ page.image.url }}" class="page-hero-img" alt="{{ page.title }}">
+                    {% endif %}
+
+                    <div class="page-content-body">
+                        <h1>{{ page.title }}</h1>
+                        <div class="page-updated">
+                            <i class="bi bi-clock me-1"></i>Оновлено: {{ page.updated_at|date:"d.m.Y" }}
+                        </div>
+                        <div class="page-text">
+                            {{ page.content|safe }}
+                        </div>
+
+                        {# Галерея додаткових зображень сторінки #}
+                        {% with page_images=page.images.all %}
+                        {% if page_images %}
+                        <div class="page-gallery mt-4">
+                            <h3 class="page-gallery-title">
+                                <i class="bi bi-images me-2 text-primary"></i>Фотогалерея
+                            </h3>
+                            <div class="row g-3">
+                                {% for img in page_images %}
+                                {% if img.is_active %}
+                                <div class="col-md-6">
+                                    <figure class="page-gallery-item">
+                                        <img src="{{ img.image.url }}"
+                                             alt="{{ img.caption|default:page.title }}"
+                                             data-page-lightbox="1"
+                                             loading="lazy">
+                                        {% if img.caption %}
+                                        <figcaption>{{ img.caption }}</figcaption>
+                                        {% endif %}
+                                    </figure>
+                                </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+
+                <!-- Про заклад - навігація -->
+                {% if page.slug == 'about' or page.slug == 'history' or page.slug == 'staff' %}
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-building me-2"></i>Про заклад
+                    </div>
+                    <div class="bg-white">
+                        <a href="{% url 'main:page_detail' 'about' %}" class="sidebar-link {% if page.slug == 'about' %}active{% endif %}">
+                            <span><i class="bi bi-info-circle me-2 text-primary"></i>Про нас</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'history' %}" class="sidebar-link {% if page.slug == 'history' %}active{% endif %}">
+                            <span><i class="bi bi-book me-2 text-primary"></i>Історія</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'staff' %}" class="sidebar-link {% if page.slug == 'staff' %}active{% endif %}">
+                            <span><i class="bi bi-people me-2 text-primary"></i>Керівництво</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Педагогам -->
+                {% if page.slug == 'methodical' or page.slug == 'physical' or page.slug == 'music' or page.slug == 'attestation' or page.slug == 'circles' %}
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-mortarboard me-2"></i>Педагогам
+                    </div>
+                    <div class="bg-white">
+                        <a href="{% url 'specialists:specialist_page' 'methodical' %}" class="sidebar-link {% if page.slug == 'methodical' %}active{% endif %}">
+                            <span><i class="bi bi-journal-bookmark me-2 text-primary"></i>Методична робота</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'physical' %}" class="sidebar-link {% if page.slug == 'physical' %}active{% endif %}">
+                            <span><i class="bi bi-heart-pulse me-2 text-primary"></i>Фізкультурно-оздоровча</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'music' %}" class="sidebar-link {% if page.slug == 'music' %}active{% endif %}">
+                            <span><i class="bi bi-music-note-beamed me-2 text-primary"></i>Музичний керівник</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'psychologist' %}" class="sidebar-link">
+                            <span><i class="bi bi-person-hearts me-2 text-primary"></i>Психолог</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'medical' %}" class="sidebar-link">
+                            <span><i class="bi bi-bandaid me-2 text-primary"></i>Медична сестра</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'attestation' %}" class="sidebar-link {% if page.slug == 'attestation' %}active{% endif %}">
+                            <span><i class="bi bi-patch-check me-2 text-primary"></i>Атестація</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'circles:circles_page' %}" class="sidebar-link {% if page.slug == 'circles' %}active{% endif %}">
+                            <span><i class="bi bi-stars me-2 text-primary"></i>Гурткова робота</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Батькам -->
+                {% if page.slug == 'parents' or page.slug == 'legal' or page.slug == 'logoped' or page.slug == 'psychologist' or page.slug == 'medical' or page.slug == 'parents-rules' or page.slug == 'parent-committee' or page.slug == 'adaptation-advice' %}
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-house-heart me-2"></i>Батькам
+                    </div>
+                    <div class="bg-white">
+                        <a href="{% url 'main:page_detail' 'parents' %}" class="sidebar-link {% if page.slug == 'parents' %}active{% endif %}">
+                            <span><i class="bi bi-people me-2 text-primary"></i>Батьківська сторінка</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'legal' %}" class="sidebar-link {% if page.slug == 'legal' %}active{% endif %}">
+                            <span><i class="bi bi-shield-check me-2 text-primary"></i>Правова освіта</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'logoped' %}" class="sidebar-link {% if page.slug == 'logoped' %}active{% endif %}">
+                            <span><i class="bi bi-chat-dots me-2 text-primary"></i>Поради логопеда</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'psychologist' %}" class="sidebar-link {% if page.slug == 'psychologist' %}active{% endif %}">
+                            <span><i class="bi bi-person-hearts me-2 text-primary"></i>Поради психолога</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'medical' %}" class="sidebar-link {% if page.slug == 'medical' %}active{% endif %}">
+                            <span><i class="bi bi-bandaid me-2 text-primary"></i>Поради медсестри</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="https://drive.google.com/drive/folders/0B8wiwE5qLWoYfk9Tc0UxSlN4aFlIT21Oc2JPbHJjZmVlUExUeXdrY0UwNHJFUHczZ1V1LVk?usp=sharing" target="_blank" rel="noopener" class="sidebar-link">
+                            <span><i class="bi bi-google me-2 text-primary"></i>Майбутні першокласники</span>
+                            <i class="bi bi-box-arrow-up-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Корисні посилання -->
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-link-45deg me-2"></i>Корисні розділи
+                    </div>
+                    <div class="bg-white">
+                        <a href="{% url 'news:news_list' %}" class="sidebar-link">
+                            <span><i class="bi bi-newspaper me-2 text-primary"></i>Новини</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'gallery:gallery_list' %}" class="sidebar-link">
+                            <span><i class="bi bi-images me-2 text-primary"></i>Фотогалерея</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'documents:documents_list' %}" class="sidebar-link">
+                            <span><i class="bi bi-file-earmark-text me-2 text-primary"></i>Документи</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:contacts' %}" class="sidebar-link">
+                            <span><i class="bi bi-geo-alt me-2 text-primary"></i>Контакти</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox для зображень -->
+<div class="page-lightbox" id="pageLightbox" role="dialog" aria-hidden="true">
+    <button type="button" class="lb-close" aria-label="Закрити">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <img src="" alt="" id="pageLightboxImg">
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var lightbox = document.getElementById('pageLightbox');
+    var lightboxImg = document.getElementById('pageLightboxImg');
+    if (!lightbox || !lightboxImg) return;
+
+    var closeBtn = lightbox.querySelector('.lb-close');
+
+    document.querySelectorAll('[data-page-lightbox]').forEach(function (img) {
+        img.addEventListener('click', function () {
+            lightboxImg.src = this.src;
+            lightboxImg.alt = this.alt || '';
+            lightbox.classList.add('open');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+
+    var closeLightbox = function () {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        lightboxImg.src = '';
+        document.body.style.overflow = '';
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+    });
+})();
+</script>
+{% endblock %}

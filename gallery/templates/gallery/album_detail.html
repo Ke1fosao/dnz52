@@ -1,0 +1,362 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ album.title }} | Фотогалерея | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* Сітка фото */
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 12px;
+    }
+    .photo-item {
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        aspect-ratio: 4/3;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+        display: block;
+    }
+    .photo-item:hover img {
+        transform: scale(1.07);
+    }
+    .photo-item-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+    }
+    .photo-item:hover .photo-item-overlay {
+        background: rgba(0,0,0,0.35);
+    }
+    .photo-item-overlay i {
+        color: white;
+        font-size: 2rem;
+        opacity: 0;
+        transform: scale(0.7);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    .photo-item:hover .photo-item-overlay i {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .photo-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.6));
+        color: white;
+        font-size: 0.8rem;
+        padding: 20px 10px 8px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .photo-item:hover .photo-caption {
+        opacity: 1;
+    }
+
+    /* === ЛАЙТБОКС === */
+    .lightbox {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.95);
+        z-index: 9999;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        animation: lbFadeIn 0.25s ease;
+    }
+    .lightbox.active {
+        display: flex;
+    }
+    @keyframes lbFadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+    .lb-close {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        color: white;
+        font-size: 2.2rem;
+        cursor: pointer;
+        line-height: 1;
+        opacity: 0.8;
+        transition: opacity 0.2s, transform 0.2s;
+        z-index: 10;
+        background: none;
+        border: none;
+    }
+    .lb-close:hover {
+        opacity: 1;
+        transform: scale(1.15);
+    }
+    .lb-counter {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255,255,255,0.7);
+        font-size: 0.9rem;
+    }
+    .lb-img-wrap {
+        max-width: 90vw;
+        max-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .lb-img-wrap img {
+        max-width: 90vw;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: 6px;
+        box-shadow: 0 0 60px rgba(0,0,0,0.5);
+        animation: lbImgIn 0.2s ease;
+    }
+    @keyframes lbImgIn {
+        from { opacity: 0; transform: scale(0.96); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+    .lb-caption {
+        color: rgba(255,255,255,0.75);
+        font-size: 0.9rem;
+        margin-top: 14px;
+        text-align: center;
+        min-height: 1.4em;
+    }
+    .lb-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(255,255,255,0.12);
+        border: none;
+        color: white;
+        font-size: 1.8rem;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+        z-index: 10;
+    }
+    .lb-arrow:hover { background: rgba(255,255,255,0.25); }
+    .lb-prev { left: 20px; }
+    .lb-next { right: 20px; }
+    @media (max-width: 576px) {
+        .lb-arrow { width: 40px; height: 40px; font-size: 1.3rem; }
+        .lb-prev { left: 8px; }
+        .lb-next { right: 8px; }
+    }
+
+    /* Інфо-панель альбому */
+    .album-info-bar {
+        background: white;
+        border-radius: 12px;
+        padding: 20px 28px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    .no-photos { padding: 80px 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'gallery:gallery_list' %}">Фотогалерея</a></li>
+                <li class="breadcrumb-item active">{{ album.title }}</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1">
+            <i class="bi bi-folder2-open me-2"></i>{{ album.title }}
+        </h1>
+        <p class="text-white-50 mb-0">
+            <i class="bi bi-camera me-1"></i>{{ photos|length }} фото
+            <span class="ms-3"><i class="bi bi-calendar3 me-1"></i>{{ album.created_at|date:"d.m.Y" }}</span>
+        </p>
+    </div>
+</section>
+
+<!-- Фото -->
+<section class="py-5">
+    <div class="container">
+
+        <!-- Опис альбому -->
+        {% if album.description %}
+        <div class="album-info-bar">
+            <p class="mb-0 text-muted"><i class="bi bi-info-circle text-primary me-2"></i>{{ album.description }}</p>
+        </div>
+        {% endif %}
+
+        {% if photos %}
+
+        <!-- Сітка -->
+        <div class="photo-grid" id="photoGrid">
+            {% for photo in photos %}
+            <div class="photo-item" onclick="openLightbox({{ forloop.counter0 }})" tabindex="0"
+                 onkeydown="if(event.key==='Enter') openLightbox({{ forloop.counter0 }})">
+                <img src="{{ photo.image.url }}" alt="{{ photo.title|default:album.title }}"
+                     loading="lazy">
+                <div class="photo-item-overlay">
+                    <i class="bi bi-zoom-in"></i>
+                </div>
+                {% if photo.title %}
+                <div class="photo-caption">{{ photo.title }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Кнопка назад -->
+        <div class="text-center mt-5">
+            <a href="{% url 'gallery:gallery_list' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-2"></i>Всі альбоми
+            </a>
+        </div>
+
+        {% else %}
+        <div class="text-center no-photos">
+            <i class="bi bi-camera fs-1 text-muted d-block mb-3"></i>
+            <h4 class="text-muted">Фото ще не додані</h4>
+            <a href="{% url 'gallery:gallery_list' %}" class="btn btn-outline-primary mt-3">
+                <i class="bi bi-arrow-left me-2"></i>Назад до галереї
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+<!-- === ЛАЙТБОКС === -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Перегляд фото">
+
+    <button class="lb-close" onclick="closeLightbox()" aria-label="Закрити">
+        <i class="bi bi-x-lg"></i>
+    </button>
+
+    <div class="lb-counter" id="lbCounter"></div>
+
+    <button class="lb-arrow lb-prev" onclick="prevPhoto()" aria-label="Попереднє фото">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <div>
+        <div class="lb-img-wrap">
+            <img id="lbImg" src="" alt="">
+        </div>
+        <div class="lb-caption" id="lbCaption"></div>
+    </div>
+
+    <button class="lb-arrow lb-next" onclick="nextPhoto()" aria-label="Наступне фото">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Масив всіх фото з шаблону
+const photos = [
+    {% for photo in photos %}
+    {
+        src: "{{ photo.image.url }}",
+        caption: "{{ photo.title|default:'' }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+let currentIndex = 0;
+
+function openLightbox(index) {
+    currentIndex = index;
+    updateLightbox();
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function updateLightbox() {
+    const photo = photos[currentIndex];
+    const img = document.getElementById('lbImg');
+    img.style.animation = 'none';
+    img.offsetHeight; // reflow
+    img.style.animation = '';
+    img.src = photo.src;
+    img.alt = photo.caption || '';
+    document.getElementById('lbCaption').textContent = photo.caption || '';
+    document.getElementById('lbCounter').textContent = (currentIndex + 1) + ' / ' + photos.length;
+}
+
+function nextPhoto() {
+    currentIndex = (currentIndex + 1) % photos.length;
+    updateLightbox();
+}
+
+function prevPhoto() {
+    currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+    updateLightbox();
+}
+
+// Закрити по кліку на фон
+document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+});
+
+// Клавіатура
+document.addEventListener('keydown', function(e) {
+    if (!document.getElementById('lightbox').classList.contains('active')) return;
+    if (e.key === 'ArrowRight') nextPhoto();
+    if (e.key === 'ArrowLeft')  prevPhoto();
+    if (e.key === 'Escape')     closeLightbox();
+});
+
+// Свайп на мобільному
+let touchStartX = 0;
+document.getElementById('lightbox').addEventListener('touchstart', e => {
+    touchStartX = e.changedTouches[0].screenX;
+});
+document.getElementById('lightbox').addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) {
+        diff > 0 ? nextPhoto() : prevPhoto();
+    }
+});
+</script>
+{% endblock %}

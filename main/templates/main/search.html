@@ -1,0 +1,376 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Пошук{% if query %}: {{ query }}{% endif %} | ЗДО №52{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-hero {
+    background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%);
+    padding: 70px 0 50px;
+    position: relative;
+    overflow: hidden;
+}
+.page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15), transparent 55%);
+}
+.page-hero .container { position: relative; z-index: 1; }
+.breadcrumb-item a { color: rgba(255,255,255,0.85); text-decoration: none; }
+.breadcrumb-item.active { color: white; }
+.breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+.big-search-form { max-width: 760px; margin: 0 auto; }
+.big-search-form .input-group {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.20);
+    border-radius: 50px;
+    overflow: hidden;
+}
+.big-search-form input {
+    border: none;
+    padding: 16px 28px;
+    font-size: 1.05rem;
+}
+.big-search-form input:focus { box-shadow: none; outline: none; }
+.big-search-form .btn {
+    border-radius: 0;
+    padding: 0 32px;
+    font-weight: 700;
+    background: #2C3E50;
+    border: none;
+}
+.big-search-form .btn:hover { background: #1F2A38; }
+
+/* Filter chips */
+.filter-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 16px 20px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+}
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: #F0F4F9;
+    color: #6C7A89;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+.filter-chip:hover { background: #E5EFFA; color: #4A90E2; }
+.filter-chip.active {
+    background: #4A90E2;
+    color: #fff;
+    border-color: #357ABD;
+    box-shadow: 0 4px 12px rgba(74,144,226,0.30);
+}
+.filter-chip .count {
+    background: rgba(255,255,255,0.65);
+    color: #2C3E50;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.filter-chip.active .count {
+    background: rgba(255,255,255,0.30);
+    color: #fff;
+}
+
+/* Search results */
+.search-result {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 24px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.06);
+    margin-bottom: 14px;
+    border-left: 4px solid #4A90E2;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.search-result:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 24px rgba(74,144,226,0.14);
+}
+.search-result.accent-primary  { border-left-color: #4A90E2; }
+.search-result.accent-success  { border-left-color: #50E3C2; }
+.search-result.accent-info     { border-left-color: #38C2DD; }
+.search-result.accent-warning  { border-left-color: #FFB84D; }
+.search-result.accent-danger   { border-left-color: #FF6B6B; }
+.search-result.accent-purple   { border-left-color: #B388FF; }
+.search-result.accent-pink     { border-left-color: #FF8FA3; }
+
+.result-type {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.search-result.accent-primary .result-type  { background: #E5EFFA; color: #2E6BB8; }
+.search-result.accent-success .result-type  { background: #E0FAF3; color: #1F9B82; }
+.search-result.accent-info    .result-type  { background: #E2F6FB; color: #1A8DAE; }
+.search-result.accent-warning .result-type  { background: #FFF4DC; color: #B57B00; }
+.search-result.accent-danger  .result-type  { background: #FCE6E9; color: #B23A48; }
+.search-result.accent-purple  .result-type  { background: #EFE5FB; color: #6231BE; }
+.search-result.accent-pink    .result-type  { background: #FFE1E8; color: #B23A48; }
+
+.result-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2C3E50;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 6px;
+    line-height: 1.4;
+}
+.result-title:hover { color: #4A90E2; }
+.result-snippet {
+    color: #5C6B7A;
+    font-size: 0.92rem;
+    line-height: 1.65;
+}
+.result-snippet mark {
+    background: #FFEAB3;
+    color: #5C3F00;
+    font-weight: 600;
+    padding: 0 3px;
+    border-radius: 3px;
+}
+.result-date {
+    font-size: 0.78rem;
+    color: #8B98AB;
+    margin-top: 8px;
+}
+
+.no-query {
+    text-align: center;
+    padding: 60px 1rem;
+    color: #6C7A89;
+}
+.no-query .quick-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+.no-query .quick-tag {
+    padding: 6px 14px;
+    background: #F0F4F9;
+    color: #2C3E50;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.no-query .quick-tag:hover { background: #4A90E2; color: #fff; }
+
+@media (max-width: 576px) {
+    .big-search-form .input-group { flex-direction: column; border-radius: 18px; }
+    .big-search-form input { border-radius: 18px 18px 0 0; }
+    .big-search-form .btn { border-radius: 0 0 18px 18px; padding: 12px; }
+    .filter-toolbar { padding: 12px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Пошук</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1 text-center"><i class="bi bi-search me-2"></i>Пошук по сайту</h1>
+        {% if query %}
+        <p class="text-white-50 mb-4 text-center">
+            Запит: <strong>«{{ query }}»</strong> — знайдено <strong>{{ total }}</strong> результат{{ total|pluralize:"и,и,ів" }}
+        </p>
+        {% else %}
+        <p class="text-white-50 mb-4 text-center">Знайдіть новини, спеціалістів, документи, групи, гуртки та інше</p>
+        {% endif %}
+
+        <form class="big-search-form" method="get" action="{% url 'main:search' %}">
+            <div class="input-group">
+                <input class="form-control" type="search" name="q"
+                       placeholder="Що шукаємо? Наприклад: психолог, новини, документи..."
+                       value="{{ query|default:'' }}" autofocus>
+                <button class="btn" type="submit"><i class="bi bi-search me-2"></i>Шукати</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9 mx-auto">
+
+            {% if query and query|length < 2 %}
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Введіть щонайменше <strong>2 символи</strong> для пошуку.
+                </div>
+
+            {% elif query and not results %}
+                <div class="text-center py-5 bg-white rounded shadow-sm">
+                    <i class="bi bi-search fs-1 text-muted opacity-50 d-block mb-3"></i>
+                    <h4 class="text-muted">За запитом «{{ query }}» нічого не знайдено</h4>
+                    <p class="text-muted mb-3">Спробуйте інші ключові слова або перевірте правопис.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a href="?q=психолог" class="btn btn-outline-primary btn-sm">психолог</a>
+                        <a href="?q=новини" class="btn btn-outline-primary btn-sm">новини</a>
+                        <a href="?q=правила" class="btn btn-outline-primary btn-sm">правила</a>
+                        <a href="?q=зарахування" class="btn btn-outline-primary btn-sm">зарахування</a>
+                    </div>
+                </div>
+
+            {% elif results %}
+                {# Фільтр-чіпи #}
+                <div class="filter-toolbar">
+                    <a href="?q={{ query }}" class="filter-chip {% if not kind %}active{% endif %}">
+                        <i class="bi bi-collection"></i> Усі <span class="count">{{ total }}</span>
+                    </a>
+                    {% if counts.news %}
+                    <a href="?q={{ query }}&kind=news" class="filter-chip {% if kind == 'news' %}active{% endif %}">
+                        <i class="bi bi-newspaper"></i> Новини <span class="count">{{ counts.news }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.page %}
+                    <a href="?q={{ query }}&kind=page" class="filter-chip {% if kind == 'page' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-text"></i> Сторінки <span class="count">{{ counts.page }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.specialist %}
+                    <a href="?q={{ query }}&kind=specialist" class="filter-chip {% if kind == 'specialist' %}active{% endif %}">
+                        <i class="bi bi-person-badge"></i> Спеціалісти <span class="count">{{ counts.specialist }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.staff %}
+                    <a href="?q={{ query }}&kind=staff" class="filter-chip {% if kind == 'staff' %}active{% endif %}">
+                        <i class="bi bi-mortarboard"></i> Керівництво <span class="count">{{ counts.staff }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.group %}
+                    <a href="?q={{ query }}&kind=group" class="filter-chip {% if kind == 'group' %}active{% endif %}">
+                        <i class="bi bi-grid-3x3-gap"></i> Групи <span class="count">{{ counts.group }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.circle %}
+                    <a href="?q={{ query }}&kind=circle" class="filter-chip {% if kind == 'circle' %}active{% endif %}">
+                        <i class="bi bi-stars"></i> Гуртки <span class="count">{{ counts.circle }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.document %}
+                    <a href="?q={{ query }}&kind=document" class="filter-chip {% if kind == 'document' %}active{% endif %}">
+                        <i class="bi bi-file-earmark-pdf"></i> Документи <span class="count">{{ counts.document }}</span>
+                    </a>
+                    {% endif %}
+                    {% if counts.album %}
+                    <a href="?q={{ query }}&kind=album" class="filter-chip {% if kind == 'album' %}active{% endif %}">
+                        <i class="bi bi-images"></i> Альбоми <span class="count">{{ counts.album }}</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% for r in page_obj %}
+                <div class="search-result accent-{{ r.accent }}">
+                    <span class="result-type"><i class="bi {{ r.icon }}"></i>{{ r.type }}</span>
+                    <a href="{{ r.url }}" class="result-title">{{ r.title }}</a>
+                    {% if r.snippet %}
+                    <div class="result-snippet">{{ r.snippet }}</div>
+                    {% endif %}
+                    {% if r.date %}
+                    <div class="result-date"><i class="bi bi-calendar3 me-1"></i>{{ r.date|date:"d.m.Y" }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                {# Пагінація #}
+                {% if page_obj.has_other_pages %}
+                <nav class="mt-4 d-flex justify-content-center">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?q={{ query }}{% if kind %}&kind={{ kind }}{% endif %}&page={{ page_obj.previous_page_number }}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?q={{ query }}{% if kind %}&kind={{ kind }}{% endif %}&page={{ page_obj.next_page_number }}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+            {% else %}
+                <div class="no-query">
+                    <i class="bi bi-search fs-1 d-block mb-3 opacity-50"></i>
+                    <h4>Що шукатимемо сьогодні?</h4>
+                    <p>Введіть запит вище, або скористайтесь популярними тегами:</p>
+                    <div class="quick-tags">
+                        <a href="?q=психолог" class="quick-tag">психолог</a>
+                        <a href="?q=методична" class="quick-tag">методична робота</a>
+                        <a href="?q=зарахування" class="quick-tag">зарахування</a>
+                        <a href="?q=правила" class="quick-tag">правила</a>
+                        <a href="?q=новини" class="quick-tag">новини</a>
+                        <a href="?q=група" class="quick-tag">група</a>
+                        <a href="?q=Стасюк" class="quick-tag">Стасюк</a>
+                    </div>
+                </div>
+            {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Підсвітка ключового слова у сніпетах #}
+{% if query and results %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var query = "{{ query|escapejs }}";
+    if (!query) return;
+    var terms = query.split(/\s+/).filter(function (t) { return t.length >= 2; });
+    if (terms.length === 0) terms = [query];
+    var escapeRe = function (s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
+    var re = new RegExp('(' + terms.map(escapeRe).join('|') + ')', 'gi');
+    document.querySelectorAll('.result-snippet, .result-title').forEach(function (el) {
+        // Працюємо тільки з текстовими вузлами
+        var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+        var nodes = [];
+        while (walker.nextNode()) nodes.push(walker.currentNode);
+        nodes.forEach(function (n) {
+            if (!re.test(n.nodeValue)) return;
+            re.lastIndex = 0;
+            var html = n.nodeValue.replace(re, '<mark>$1</mark>');
+            var span = document.createElement('span');
+            span.innerHTML = html;
+            n.parentNode.replaceChild(span, n);
+        });
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

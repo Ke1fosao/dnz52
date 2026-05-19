@@ -1,0 +1,292 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Контакти | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* Картки контактів */
+    .contact-card {
+        background: white;
+        border-radius: 14px;
+        padding: 28px 24px;
+        box-shadow: 0 3px 20px rgba(0,0,0,0.07);
+        height: 100%;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 2px solid transparent;
+    }
+    .contact-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 35px rgba(74,144,226,0.15);
+        border-color: #e0eeff;
+    }
+    .contact-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e8f4fd, #c8e4f8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 1.6rem;
+        color: #4A90E2;
+    }
+    .contact-card h5 {
+        font-size: 0.82rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #aaa;
+        margin-bottom: 8px;
+    }
+    .contact-card p {
+        font-size: 1rem;
+        color: #2C3E50;
+        font-weight: 500;
+        margin: 0;
+        line-height: 1.6;
+    }
+    .contact-card a {
+        color: #4A90E2;
+        text-decoration: none;
+    }
+    .contact-card a:hover { text-decoration: underline; }
+
+    /* Карта та режим роботи */
+    .info-block {
+        background: white;
+        border-radius: 14px;
+        box-shadow: 0 3px 20px rgba(0,0,0,0.07);
+        overflow: hidden;
+    }
+    .info-block-header {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        color: white;
+        padding: 18px 24px;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+    .info-block-body { padding: 24px; }
+
+    /* Режим роботи */
+    .hours-text {
+        font-size: 0.95rem;
+        line-height: 1.9;
+        color: #444;
+        white-space: pre-line;
+    }
+
+    /* Карта */
+    .map-wrap {
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 3px 20px rgba(0,0,0,0.07);
+    }
+    .map-wrap iframe {
+        width: 100%;
+        height: 420px;
+        border: none;
+        display: block;
+    }
+    .map-placeholder {
+        height: 420px;
+        background: linear-gradient(135deg, #e8f4fd, #d1e8f9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #4A90E2;
+    }
+
+    /* Соцмережі */
+    .social-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+    .social-facebook { background: #1877f2; color: white; }
+    .social-facebook:hover { background: #1565d8; color: white; transform: translateY(-2px); }
+    .social-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: white; }
+    .social-instagram:hover { opacity: 0.9; color: white; transform: translateY(-2px); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Контакти</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-0">
+            <i class="bi bi-geo-alt me-2"></i>Контакти
+        </h1>
+        <p class="text-white-50 mt-2 mb-0">Зв'яжіться з нами зручним способом</p>
+    </div>
+</section>
+
+<!-- Контакти -->
+<section class="py-5">
+    <div class="container">
+
+        {% if contact %}
+
+        <!-- Картки з контактами -->
+        <div class="row g-4 mb-5">
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                    <h5>Адреса</h5>
+                    <p>{{ contact.address }}</p>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                    <h5>Телефон</h5>
+                    <p>
+                        {% for phone in contact.phone.splitlines %}
+                        <a href="tel:{{ phone|cut:' ' }}">{{ phone }}</a><br>
+                        {% endfor %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                    <h5>Email</h5>
+                    <p><a href="mailto:{{ contact.email }}">{{ contact.email }}</a></p>
+                </div>
+            </div>
+
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
+                    <h5>Режим роботи</h5>
+                    <p style="font-size:0.9rem;">{{ contact.working_hours|linebreaksbr }}</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Карта + додаткова інфо -->
+        <div class="row g-4">
+
+            <!-- Карта -->
+            <div class="col-lg-8">
+                <div class="map-wrap">
+                    {% if contact.map_embed %}
+                        {{ contact.map_embed|safe }}
+                    {% else %}
+                        <div class="map-placeholder">
+                            <i class="bi bi-map fs-1 mb-3"></i>
+                            <p class="mb-0">Карту ще не додано</p>
+                            <small class="text-muted mt-1">Додайте embed-код Google Maps в адмінці</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Як знайти + соцмережі -->
+            <div class="col-lg-4 d-flex flex-column gap-4">
+
+                <div class="info-block">
+                    <div class="info-block-header">
+                        <i class="bi bi-signpost-2 me-2"></i>Як нас знайти
+                    </div>
+                    <div class="info-block-body">
+                        <p class="text-muted mb-3" style="font-size:0.95rem;">
+                            <i class="bi bi-geo-alt text-primary me-2"></i>{{ contact.address }}
+                        </p>
+                        <a href="https://maps.google.com/?q={{ contact.address|urlencode }}"
+                           target="_blank" class="btn btn-primary w-100">
+                            <i class="bi bi-map me-2"></i>Відкрити в Google Maps
+                        </a>
+                    </div>
+                </div>
+
+                <div class="info-block">
+                    <div class="info-block-header">
+                        <i class="bi bi-share me-2"></i>Ми в соцмережах
+                    </div>
+                    <div class="info-block-body d-flex flex-column gap-2">
+                        <a href="https://www.facebook.com/groups/619594565112638/" target="_blank" rel="noopener" class="social-btn social-facebook">
+                            <i class="bi bi-facebook"></i> Facebook
+                        </a>
+                        <a href="https://www.instagram.com/zdo52_cv/" target="_blank" rel="noopener" class="social-btn social-instagram">
+                            <i class="bi bi-instagram"></i> Instagram
+                        </a>
+                        <a href="https://www.youtube.com/@%D0%90%D0%BB%D1%96%D0%BD%D0%B0%D0%94%D0%B0%D0%BD%D1%87%D1%83%D0%BA-%D1%833%D1%82/featured" target="_blank" rel="noopener" class="social-btn" style="background:#FF0000; color:#fff;">
+                            <i class="bi bi-youtube"></i> YouTube
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Якщо контактів ще немає в БД -->
+        <div class="row g-4 mb-5">
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                    <h5>Адреса</h5>
+                    <p>вул. Приходька, 12<br>м. Рівне</p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                    <h5>Телефон</h5>
+                    <p><a href="tel:+380362265434">+380 (362) 26-54-34</a></p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-envelope-fill"></i></div>
+                    <h5>Email</h5>
+                    <p><a href="mailto:dnz52@rv.ua">dnz52@rv.ua</a></p>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <div class="contact-card">
+                    <div class="contact-icon"><i class="bi bi-clock-fill"></i></div>
+                    <h5>Режим роботи</h5>
+                    <p style="font-size:0.9rem;">Пн–Пт: 07:00–19:00</p>
+                </div>
+            </div>
+        </div>
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            Щоб оновити контактну інформацію — додайте її в <a href="/admin/" class="alert-link">адмінпанелі</a> у розділі «Контакти».
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}

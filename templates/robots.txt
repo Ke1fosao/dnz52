@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /ckeditor/
+
+Sitemap: /sitemap.xml

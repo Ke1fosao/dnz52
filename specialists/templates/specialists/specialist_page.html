@@ -1,0 +1,875 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ page.title }} | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* ── Hero ── */
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* ── Картка спеціаліста ── */
+    .specialist-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 6px 30px rgba(0,0,0,0.09);
+        margin-bottom: 50px;
+    }
+    .specialist-header {
+        display: flex;
+        gap: 0;
+    }
+
+    /* Фото */
+    .specialist-photo-col {
+        width: 280px;
+        flex-shrink: 0;
+        position: relative;
+    }
+    .specialist-photo-col img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        min-height: 320px;
+        display: block;
+    }
+    .specialist-photo-placeholder {
+        width: 100%;
+        min-height: 320px;
+        background: linear-gradient(135deg, #e8f4fd, #c8e4f8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 5rem;
+    }
+
+    /* Інфо */
+    .specialist-info-col {
+        flex: 1;
+        padding: 32px 36px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .specialist-position {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #4A90E2;
+        margin-bottom: 8px;
+    }
+    .specialist-name {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #2C3E50;
+        margin-bottom: 20px;
+        line-height: 1.3;
+    }
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .info-item {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .info-item .icon-box {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        background: #e8f4fd;
+        color: #4A90E2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+    .info-item .info-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: #aaa;
+        line-height: 1;
+        margin-bottom: 3px;
+    }
+    .info-item .info-value {
+        font-size: 0.9rem;
+        color: #333;
+        line-height: 1.4;
+    }
+    .specialist-motto {
+        background: linear-gradient(135deg, #f0f7ff, #e8f4fd);
+        border-left: 4px solid #4A90E2;
+        border-radius: 0 10px 10px 0;
+        padding: 12px 18px;
+        font-style: italic;
+        color: #555;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    .specialist-motto i { color: #4A90E2; margin-right: 6px; }
+
+    /* Секція біографії/діяльності */
+    .specialist-bio {
+        padding: 30px 36px;
+        border-top: 1px solid #f0f0f0;
+    }
+    .specialist-bio .bio-text {
+        font-size: 1rem;
+        line-height: 1.85;
+        color: #444;
+    }
+    .specialist-bio .bio-text h2,
+    .specialist-bio .bio-text h3 { color: #2C3E50; margin-top: 24px; }
+    .specialist-bio .bio-text img { max-width: 100%; border-radius: 10px; margin: 12px 0; }
+    .specialist-bio .bio-text blockquote {
+        border-left: 4px solid #4A90E2;
+        padding: 10px 18px;
+        background: #f0f7ff;
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+        color: #555;
+        margin: 16px 0;
+    }
+
+    /* ── Альбоми ── */
+    .albums-section { margin-top: 10px; }
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 3px solid #4A90E2;
+        display: inline-block;
+    }
+    .album-event-card {
+        background: white;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+    }
+    .album-event-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.13);
+    }
+    .album-cover-wrap {
+        position: relative;
+        height: 190px;
+        overflow: hidden;
+    }
+    .album-cover-wrap img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+    }
+    .album-event-card:hover .album-cover-wrap img { transform: scale(1.06); }
+    .album-cover-placeholder {
+        width: 100%; height: 100%;
+        background: linear-gradient(135deg, #e8f4fd, #c8e4f8);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; color: #4A90E2;
+    }
+    .album-photo-count {
+        position: absolute;
+        top: 10px; right: 10px;
+        background: rgba(0,0,0,0.55);
+        color: white;
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
+    }
+    .album-body { padding: 16px 18px 18px; }
+    .album-event-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #2C3E50;
+        margin-bottom: 6px;
+    }
+    .album-event-desc {
+        font-size: 0.83rem;
+        color: #6c757d;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+    .album-link {
+        font-size: 0.83rem;
+        font-weight: 600;
+        color: #4A90E2;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .album-link:hover { text-decoration: underline; }
+
+    /* ── Сайдбар ── */
+    .sidebar-widget {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 24px;
+    }
+    .sidebar-widget .widget-header {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        color: white;
+        padding: 14px 20px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    .sidebar-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 18px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        font-size: 0.88rem;
+        transition: background 0.2s;
+    }
+    .sidebar-link:last-child { border-bottom: none; }
+    .sidebar-link:hover, .sidebar-link.active { background: #f0f7ff; color: #4A90E2; }
+    .sidebar-link.active { font-weight: 600; }
+
+    /* Розділювач між спеціалістами */
+    .specialist-divider {
+        border: none;
+        height: 3px;
+        background: linear-gradient(to right, #4A90E2, transparent);
+        border-radius: 2px;
+        margin: 50px 0;
+    }
+
+    /* Науково-методична тема */
+    .theme-block {
+        background: linear-gradient(135deg, #FFF9E5 0%, #FFEAB3 100%);
+        border-radius: 18px;
+        padding: 2rem 2.2rem;
+        margin: 2rem 0;
+        position: relative;
+        overflow: hidden;
+        border-left: 6px solid #FFB84D;
+        box-shadow: 0 6px 22px rgba(255,184,77,0.18);
+    }
+    .theme-block::before {
+        content: "";
+        position: absolute;
+        top: -40%;
+        right: -10%;
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(255,255,255,0.55), transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    .theme-block .content { position: relative; z-index: 1; }
+    .theme-block .badge-period {
+        display: inline-block;
+        background: #FFB84D;
+        color: #fff;
+        padding: 0.35rem 0.95rem;
+        border-radius: 30px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.85rem;
+    }
+    .theme-block h3 {
+        color: #7B5500;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+    .theme-block h3 i { color: #B57B00; }
+    .theme-block p.theme-text {
+        color: #5C3F00;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        font-style: italic;
+        margin: 0;
+    }
+
+    /* Розділи спеціаліста (sections) */
+    .section-card {
+        background: #fff;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 5px 22px rgba(44,62,80,0.07);
+        margin-bottom: 1.8rem;
+        border: 1px solid rgba(74,144,226,0.06);
+    }
+    .section-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.3rem 1.6rem;
+        color: #fff;
+        position: relative;
+    }
+    .section-card.accent-primary .section-card-header { background: linear-gradient(135deg, #4A90E2, #357ABD); }
+    .section-card.accent-success .section-card-header { background: linear-gradient(135deg, #50E3C2, #34C8A8); }
+    .section-card.accent-warning .section-card-header { background: linear-gradient(135deg, #FFB84D, #FF9F1A); }
+    .section-card.accent-danger  .section-card-header { background: linear-gradient(135deg, #FF6B6B, #E5677E); }
+    .section-card.accent-info    .section-card-header { background: linear-gradient(135deg, #38C2DD, #2DA0BB); }
+    .section-card.accent-purple  .section-card-header { background: linear-gradient(135deg, #B388FF, #7C4DCB); }
+    .section-card.accent-pink    .section-card-header { background: linear-gradient(135deg, #FF8FA3, #E5677E); }
+    .section-card-header .icon-circle {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.20);
+        backdrop-filter: blur(6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        flex-shrink: 0;
+    }
+    .section-card-header h3 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.3;
+    }
+    .section-card-header .subtitle {
+        font-size: 0.88rem;
+        opacity: 0.92;
+        margin-top: 3px;
+    }
+    .section-card-body {
+        padding: 1.5rem 1.8rem;
+    }
+    .section-card-body .section-text {
+        font-size: 1rem;
+        line-height: 1.75;
+        color: #3A4654;
+    }
+    .section-card-body .section-text h4 { color: #2C3E50; margin-top: 1.2rem; margin-bottom: 0.6rem; }
+    .section-card-body .section-text ul, .section-card-body .section-text ol { padding-left: 1.3rem; }
+    .section-card-body .section-text li { margin-bottom: 0.35rem; }
+    .section-card-body .section-text blockquote {
+        border-left: 4px solid #50E3C2;
+        background: #F0FAF8;
+        padding: 0.8rem 1.1rem;
+        border-radius: 0 8px 8px 0;
+        color: #34C8A8;
+        font-style: italic;
+        margin: 1rem 0;
+    }
+
+    /* Photos grid in section */
+    .section-photos-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 1.2rem;
+    }
+    .section-photo {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.10);
+        aspect-ratio: 4 / 3;
+        transition: transform 0.3s, box-shadow 0.3s;
+        background: #F0F4F9;
+        cursor: zoom-in;
+    }
+    .section-photo:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.16);
+    }
+    .section-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s;
+    }
+    .section-photo:hover img { transform: scale(1.06); }
+    .section-photo .caption {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        padding: 6px 12px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.75));
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    /* Event link button */
+    .section-event-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1.2rem;
+        padding: 0.7rem 1.4rem;
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 5px 14px rgba(74,144,226,0.30);
+    }
+    .section-event-link:hover {
+        transform: translateY(-2px);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(74,144,226,0.42);
+    }
+    .section-event-link i { font-size: 1.1rem; }
+
+    /* Description block */
+    .description-block {
+        background: #fff;
+        border-radius: 18px;
+        padding: 2rem 2.2rem;
+        box-shadow: 0 4px 20px rgba(44,62,80,0.07);
+        margin: 2rem 0;
+        border: 1px solid rgba(74,144,226,0.08);
+    }
+    .description-block h2 {
+        color: #2C3E50;
+        font-size: 1.4rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        padding-bottom: 0.7rem;
+        border-bottom: 3px solid #4A90E2;
+        display: inline-block;
+    }
+    .description-block .desc-text {
+        font-size: 1rem;
+        line-height: 1.85;
+        color: #3A4654;
+    }
+    .description-block .desc-text h3,
+    .description-block .desc-text h4 {
+        color: #2C3E50;
+        margin-top: 1.5rem;
+        margin-bottom: 0.7rem;
+    }
+    .description-block .desc-text ul,
+    .description-block .desc-text ol { padding-left: 1.3rem; }
+    .description-block .desc-text li { margin-bottom: 0.45rem; }
+    .description-block .desc-text blockquote {
+        border-left: 4px solid #50E3C2;
+        background: #F0FAF8;
+        padding: 0.9rem 1.2rem;
+        border-radius: 0 8px 8px 0;
+        margin: 1rem 0;
+        color: #34C8A8;
+        font-style: italic;
+    }
+
+    /* Lightbox */
+    .page-lightbox {
+        position: fixed; inset: 0;
+        background: rgba(15,25,40,0.92);
+        z-index: 1080;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+    .page-lightbox.open { display: flex; }
+    .page-lightbox img {
+        max-width: 95vw; max-height: 92vh;
+        border-radius: 10px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    .page-lightbox .lb-close {
+        position: absolute; top: 20px; right: 24px;
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        color: #fff; border: none;
+        font-size: 1.4rem; cursor: pointer;
+        transition: background 0.2s;
+    }
+    .page-lightbox .lb-close:hover { background: rgba(255,255,255,0.30); }
+
+    @media (max-width: 767px) {
+        .specialist-header { flex-direction: column; }
+        .specialist-photo-col { width: 100%; }
+        .specialist-photo-col img { min-height: 250px; max-height: 300px; }
+        .specialist-info-col { padding: 22px; }
+        .info-grid { grid-template-columns: 1fr; }
+        .specialist-name { font-size: 1.3rem; }
+        .specialist-bio { padding: 22px; }
+        .section-card-header { padding: 1.1rem; }
+        .section-card-body { padding: 1.2rem; }
+        .section-photos-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">{{ page.title }}</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1">
+            {% if page_type == 'methodical' %}<i class="bi bi-journal-bookmark me-2"></i>
+            {% elif page_type == 'physical' %}<i class="bi bi-heart-pulse me-2"></i>
+            {% elif page_type == 'music' %}<i class="bi bi-music-note-beamed me-2"></i>
+            {% elif page_type == 'psychologist' %}<i class="bi bi-person-hearts me-2"></i>
+            {% elif page_type == 'medical' %}<i class="bi bi-bandaid me-2"></i>
+            {% endif %}
+            {{ page.title }}
+        </h1>
+        {% if page.intro %}
+        <p class="text-white-50 mt-2 mb-0">{{ page.intro }}</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Контент -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Основний контент -->
+            <div class="col-lg-8">
+
+                {% if specialists %}
+                    {% for specialist in specialists %}
+
+                    {% if not forloop.first %}
+                    <hr class="specialist-divider">
+                    {% endif %}
+
+                    <!-- ══ Картка спеціаліста ══ -->
+                    <div class="specialist-card">
+                        <div class="specialist-header">
+
+                            <!-- Фото -->
+                            <div class="specialist-photo-col">
+                                {% if specialist.photo %}
+                                    <img src="{{ specialist.photo.url }}" alt="{{ specialist.full_name }}">
+                                {% else %}
+                                    <div class="specialist-photo-placeholder">
+                                        {% if page_type == 'music' %}🎵
+                                        {% elif page_type == 'medical' %}👩‍⚕️
+                                        {% elif page_type == 'psychologist' %}🧠
+                                        {% else %}👩‍🏫{% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Інформація -->
+                            <div class="specialist-info-col">
+                                <div class="specialist-position">{{ specialist.position }}</div>
+                                <div class="specialist-name">{{ specialist.full_name }}</div>
+
+                                <div class="info-grid">
+                                    {% if specialist.birth_date %}
+                                    <div class="info-item">
+                                        <div class="icon-box"><i class="bi bi-calendar3"></i></div>
+                                        <div>
+                                            <div class="info-label">Дата народження</div>
+                                            <div class="info-value">{{ specialist.birth_date|date:"d.m.Y" }}</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if specialist.experience %}
+                                    <div class="info-item">
+                                        <div class="icon-box"><i class="bi bi-award"></i></div>
+                                        <div>
+                                            <div class="info-label">Педагогічний стаж</div>
+                                            <div class="info-value">{{ specialist.experience }}</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if specialist.education %}
+                                    <div class="info-item" style="grid-column: 1 / -1;">
+                                        <div class="icon-box"><i class="bi bi-mortarboard"></i></div>
+                                        <div>
+                                            <div class="info-label">Освіта</div>
+                                            <div class="info-value">{{ specialist.education }}</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if specialist.category %}
+                                    <div class="info-item" style="grid-column: 1 / -1;">
+                                        <div class="icon-box"><i class="bi bi-patch-check"></i></div>
+                                        <div>
+                                            <div class="info-label">Кваліфікаційна категорія</div>
+                                            <div class="info-value">{{ specialist.category }}</div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                {% if specialist.motto %}
+                                <div class="specialist-motto">
+                                    <i class="bi bi-quote"></i>{{ specialist.motto }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Біографія / опис діяльності -->
+                        {% if specialist.bio %}
+                        <div class="specialist-bio">
+                            <div class="bio-text">{{ specialist.bio|safe }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- ══ Альбоми спеціаліста ══ -->
+                    {% if specialist.albums.all %}
+                    <div class="albums-section mb-4">
+                        <h3 class="section-title">
+                            <i class="bi bi-images me-2 text-primary"></i>Фотоматеріали
+                        </h3>
+                        <div class="row g-3">
+                            {% for spec_album in specialist.albums.all %}
+                            <div class="col-md-6">
+                                <div class="album-event-card">
+                                    <div class="album-cover-wrap">
+                                        {% if spec_album.album.cover %}
+                                            <img src="{{ spec_album.album.cover.url }}"
+                                                 alt="{{ spec_album.album.title }}">
+                                        {% else %}
+                                            <div class="album-cover-placeholder">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        {% endif %}
+                                        <span class="album-photo-count">
+                                            <i class="bi bi-camera me-1"></i>{{ spec_album.album.photos.count }}
+                                        </span>
+                                    </div>
+                                    <div class="album-body">
+                                        <div class="album-event-title">{{ spec_album.album.title }}</div>
+                                        {% if spec_album.description %}
+                                        <div class="album-event-desc">{{ spec_album.description }}</div>
+                                        {% endif %}
+                                        <a href="{% url 'gallery:album_detail' spec_album.album.slug %}"
+                                           class="album-link">
+                                            <i class="bi bi-folder2-open"></i> Переглянути альбом
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% endfor %}
+
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-person fs-1 text-muted d-block mb-3"></i>
+                    <h4 class="text-muted">Інформацію ще не додано</h4>
+                    <p class="text-muted">Додайте спеціаліста в <a href="/admin/">адмінпанелі</a></p>
+                </div>
+                {% endif %}
+
+                {# Науково-методична тема #}
+                {% if page.theme_title or page.theme_text %}
+                <div class="theme-block">
+                    <div class="content">
+                        {% if page.theme_period %}
+                        <span class="badge-period">
+                            <i class="bi bi-calendar-event me-1"></i>{{ page.theme_period }}
+                        </span>
+                        {% endif %}
+                        {% if page.theme_title %}
+                        <h3><i class="bi bi-bookmark-star-fill"></i>{{ page.theme_title }}</h3>
+                        {% endif %}
+                        {% if page.theme_text %}
+                        <p class="theme-text">«{{ page.theme_text }}»</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {# Розширений опис #}
+                {% if page.description %}
+                <div class="description-block">
+                    <h2><i class="bi bi-info-circle-fill me-2 text-primary"></i>Про напрямок</h2>
+                    <div class="desc-text">{{ page.description|safe }}</div>
+                </div>
+                {% endif %}
+
+                {# Тематичні розділи (sections) #}
+                {% for section in page.sections.all %}
+                {% if section.is_active %}
+                <div class="section-card accent-{{ section.accent }}">
+                    <div class="section-card-header">
+                        <div class="icon-circle"><i class="bi {{ section.icon }}"></i></div>
+                        <div>
+                            <h3>{{ section.title }}</h3>
+                            {% if section.subtitle %}<div class="subtitle">{{ section.subtitle }}</div>{% endif %}
+                        </div>
+                    </div>
+                    <div class="section-card-body">
+                        {% if section.description %}
+                        <div class="section-text">{{ section.description|safe }}</div>
+                        {% endif %}
+
+                        {% if section.kind == 'info' %}
+                            {# Інлайн-галерея фото #}
+                            {% with section_photos=section.photos.all %}
+                            {% if section_photos %}
+                            <div class="section-photos-grid">
+                                {% for photo in section_photos %}
+                                {% if photo.is_active %}
+                                <figure class="section-photo">
+                                    <img src="{{ photo.image.url }}"
+                                         alt="{{ photo.caption|default:section.title }}"
+                                         data-page-lightbox="1"
+                                         loading="lazy">
+                                    {% if photo.caption %}
+                                    <figcaption class="caption">{{ photo.caption }}</figcaption>
+                                    {% endif %}
+                                </figure>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                        {% elif section.kind == 'event' and section.has_link %}
+                            {# Кнопка-посилання на новину/альбом #}
+                            <a href="{{ section.get_link_url }}"
+                               class="section-event-link"
+                               {% if section.link_external_url %}target="_blank" rel="noopener"{% endif %}>
+                                <i class="bi bi-{% if section.link_album_id %}images{% elif section.link_news_slug %}newspaper{% else %}box-arrow-up-right{% endif %}"></i>
+                                {{ section.link_label|default:"Переглянути" }}
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+
+                <!-- Навігація по Педагогам -->
+                <div class="sidebar-widget">
+                    <div class="widget-header"><i class="bi bi-mortarboard me-2"></i>Педагогам</div>
+                    <div class="bg-white">
+                        <a href="{% url 'specialists:specialist_page' 'methodical' %}"
+                           class="sidebar-link {% if page_type == 'methodical' %}active{% endif %}">
+                            <span><i class="bi bi-journal-bookmark me-2 text-primary"></i>Методична робота</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'physical' %}"
+                           class="sidebar-link {% if page_type == 'physical' %}active{% endif %}">
+                            <span><i class="bi bi-heart-pulse me-2 text-primary"></i>Фізкультурно-оздоровча</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'music' %}"
+                           class="sidebar-link {% if page_type == 'music' %}active{% endif %}">
+                            <span><i class="bi bi-music-note-beamed me-2 text-primary"></i>Музичний керівник</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'psychologist' %}"
+                           class="sidebar-link {% if page_type == 'psychologist' %}active{% endif %}">
+                            <span><i class="bi bi-person-hearts me-2 text-primary"></i>Психолог</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'specialists:specialist_page' 'medical' %}"
+                           class="sidebar-link {% if page_type == 'medical' %}active{% endif %}">
+                            <span><i class="bi bi-bandaid me-2 text-primary"></i>Медична сестра</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:page_detail' 'attestation' %}" class="sidebar-link">
+                            <span><i class="bi bi-patch-check me-2 text-primary"></i>Атестація</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Корисні розділи -->
+                <div class="sidebar-widget">
+                    <div class="widget-header"><i class="bi bi-link-45deg me-2"></i>Розділи сайту</div>
+                    <div class="bg-white">
+                        <a href="{% url 'gallery:gallery_list' %}" class="sidebar-link">
+                            <span><i class="bi bi-images me-2 text-primary"></i>Фотогалерея</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'documents:documents_list' %}" class="sidebar-link">
+                            <span><i class="bi bi-file-earmark-text me-2 text-primary"></i>Документи</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'news:news_list' %}" class="sidebar-link">
+                            <span><i class="bi bi-newspaper me-2 text-primary"></i>Новини</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="page-lightbox" id="pageLightbox" role="dialog" aria-hidden="true">
+    <button type="button" class="lb-close" aria-label="Закрити"><i class="bi bi-x-lg"></i></button>
+    <img src="" alt="" id="pageLightboxImg">
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var lb = document.getElementById('pageLightbox');
+    var img = document.getElementById('pageLightboxImg');
+    if (!lb || !img) return;
+    var close = lb.querySelector('.lb-close');
+    document.querySelectorAll('[data-page-lightbox]').forEach(function (el) {
+        el.addEventListener('click', function () {
+            img.src = this.src; img.alt = this.alt || '';
+            lb.classList.add('open'); lb.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+    var closeLb = function () {
+        lb.classList.remove('open'); lb.setAttribute('aria-hidden', 'true');
+        img.src = ''; document.body.style.overflow = '';
+    };
+    if (close) close.addEventListener('click', closeLb);
+    lb.addEventListener('click', function (e) { if (e.target === lb) closeLb(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && lb.classList.contains('open')) closeLb(); });
+})();
+</script>
+{% endblock %}

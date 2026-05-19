@@ -1,0 +1,690 @@
+/* ==========================================================================
+   ЗДО №52 — основний CSS
+   ========================================================================== */
+
+/* ---------- Кольорова палітра ---------- */
+:root {
+    --primary-color: #4A90E2;
+    --primary-dark:  #357ABD;
+    --primary-light: #6BA8E8;
+    --secondary-color: #50E3C2;
+    --secondary-dark: #34C8A8;
+    --accent-color: #FFB84D;
+    --accent-warm: #FF8FA3;
+    --dark-color:  #2C3E50;
+    --text-color:  #3A4654;
+    --muted-color: #6C7A89;
+    --light-color: #F8FAFD;
+    --border-color: #E5ECF4;
+    --footer-bg:    #1F2A38;
+    --footer-bg-2:  #182231;
+    --footer-text:  #C3CFDD;
+    --footer-muted: #8B98AB;
+
+    --shadow-sm: 0 2px 8px rgba(44, 62, 80, 0.06);
+    --shadow-md: 0 5px 20px rgba(44, 62, 80, 0.10);
+    --shadow-lg: 0 12px 40px rgba(44, 62, 80, 0.14);
+
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+}
+
+/* ---------- Глобальні стилі ---------- */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
+    color: var(--text-color);
+    background-color: #FBFCFE;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--dark-color);
+    letter-spacing: -0.01em;
+}
+
+a {
+    color: var(--primary-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+img {
+    max-width: 100%;
+}
+
+::selection {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* ---------- Верхня панель ---------- */
+.top-bar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    font-size: 0.88rem;
+    letter-spacing: 0.01em;
+}
+
+.top-bar .top-link {
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.top-bar .top-link:hover {
+    opacity: 0.78;
+    color: #fff;
+}
+
+.top-bar .top-icon {
+    color: #fff;
+    font-size: 1.05rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    transition: background 0.25s, transform 0.25s;
+    text-decoration: none;
+}
+
+.top-bar .top-icon:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+    color: #fff;
+}
+
+/* ---------- Навігація ---------- */
+.main-navbar {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    font-size: 1.2rem;
+    transition: transform 0.2s;
+}
+
+.navbar-brand:hover {
+    transform: translateY(-1px);
+}
+
+.brand-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    filter: drop-shadow(0 3px 8px rgba(74,144,226,0.3));
+}
+
+.brand-logo-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    vertical-align: middle;
+}
+
+.brand-title {
+    color: var(--dark-color);
+    font-weight: 800;
+    font-size: 1.05rem;
+    line-height: 1;
+}
+
+.brand-sub {
+    color: var(--muted-color);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--dark-color) !important;
+    padding: 0.55rem 0.9rem !important;
+    border-radius: 8px;
+    transition: all 0.25s;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    background: rgba(74,144,226,0.08);
+}
+
+.nav-link.active {
+    color: var(--primary-color) !important;
+    background: rgba(74,144,226,0.10);
+}
+
+.dropdown-menu {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 12px 35px rgba(44,62,80,0.15);
+    padding: 0.5rem;
+    margin-top: 0.4rem !important;
+    min-width: 240px;
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.92rem;
+    color: var(--text-color);
+    transition: background 0.2s, color 0.2s, padding-left 0.2s;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: rgba(74,144,226,0.10);
+    color: var(--primary-dark);
+    padding-left: 1.05rem;
+}
+
+.dropdown-divider {
+    border-color: var(--border-color);
+    opacity: 1;
+}
+
+/* ---------- Слайдер ---------- */
+.hero-slider {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-slider::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(to bottom, transparent, #FBFCFE);
+    pointer-events: none;
+}
+
+.hero-slider .carousel-item img {
+    filter: brightness(0.85);
+}
+
+.carousel-caption {
+    background: rgba(28, 38, 56, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 2rem 2.5rem;
+    border-radius: var(--radius-md);
+    max-width: 800px;
+    margin: 0 auto;
+    bottom: 8%;
+    left: 5%;
+    right: 5%;
+}
+
+.carousel-caption h1 {
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.carousel-caption p {
+    color: rgba(255,255,255,0.95);
+}
+
+/* ---------- Карточки/секції ---------- */
+.section-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 2.5rem;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -12px;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.feature-card {
+    background: #fff;
+    border-radius: var(--radius-md);
+    padding: 2rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid transparent;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+    animation: fadeInUp 0.6s ease-out;
+    height: 100%;
+    text-align: center;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(74,144,226,0.15);
+}
+
+.feature-card .feature-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(74,144,226,0.15), rgba(80,227,194,0.15));
+    color: var(--primary-color);
+    font-size: 2rem;
+    transition: transform 0.35s;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.feature-card h5 {
+    color: var(--dark-color);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* ---------- Картки новин ---------- */
+.card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    overflow: hidden;
+    background: #fff;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg) !important;
+    border-color: rgba(74,144,226,0.2);
+}
+
+.card-img-top {
+    transition: transform 0.5s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.04);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    color: var(--dark-color);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+/* ---------- Welcome секція ---------- */
+.welcome-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+    padding: 5rem 0;
+}
+
+.welcome-section img {
+    border-radius: var(--radius-lg);
+    box-shadow: 0 15px 40px rgba(74,144,226,0.18);
+}
+
+/* ---------- Швидкі посилання ---------- */
+.quick-links-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-links-section::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.quick-links-section a {
+    display: block;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    transition: transform 0.3s, background 0.3s;
+    color: #fff !important;
+    text-decoration: none;
+    background: rgba(255,255,255,0.06);
+}
+
+.quick-links-section a:hover {
+    transform: translateY(-6px);
+    background: rgba(255,255,255,0.14);
+    color: #fff !important;
+}
+
+.quick-links-section i {
+    transition: transform 0.3s;
+}
+
+.quick-links-section a:hover i {
+    transform: scale(1.15);
+}
+
+/* ---------- Кнопки ---------- */
+.btn {
+    font-weight: 600;
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.3s;
+    letter-spacing: 0.01em;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    border: none;
+    box-shadow: 0 4px 14px rgba(74, 144, 226, 0.30);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, var(--primary-dark), #2A5F9E);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.40);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(74, 144, 226, 0.30);
+}
+
+.btn-lg {
+    padding: 0.85rem 2rem;
+    font-size: 1rem;
+}
+
+/* ---------- Анімації ---------- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ==========================================================================
+   ФУТЕР  — це місце де був ЧОРНИЙ ПО ЧОРНОМУ; виправлено
+   ========================================================================== */
+.site-footer {
+    background: linear-gradient(180deg, var(--footer-bg) 0%, var(--footer-bg-2) 100%);
+    color: var(--footer-text);
+    position: relative;
+}
+
+.site-footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+}
+
+.site-footer .footer-title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 1.1rem;
+    position: relative;
+    padding-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+}
+
+.site-footer .footer-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.site-footer .footer-text {
+    color: var(--footer-text);
+    font-size: 0.93rem;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.site-footer .footer-list,
+.site-footer .footer-contacts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.site-footer .footer-list li {
+    margin-bottom: 0.55rem;
+}
+
+.site-footer .footer-list a {
+    color: var(--footer-text);
+    text-decoration: none;
+    font-size: 0.92rem;
+    transition: color 0.2s, padding-left 0.2s;
+    display: inline-block;
+}
+
+.site-footer .footer-list a:hover {
+    color: var(--secondary-color);
+    padding-left: 4px;
+}
+
+.site-footer .footer-contacts {
+    color: var(--footer-text);
+    font-size: 0.92rem;
+}
+
+.site-footer .footer-contacts li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 0.7rem;
+    line-height: 1.5;
+}
+
+.site-footer .footer-contacts i {
+    color: var(--secondary-color);
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.site-footer .footer-contacts a {
+    color: var(--footer-text);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.site-footer .footer-contacts a:hover {
+    color: var(--secondary-color);
+}
+
+.site-footer .social-links {
+    display: flex;
+    gap: 0.6rem;
+}
+
+.site-footer .social-link {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: background 0.25s, transform 0.25s, color 0.25s;
+}
+
+.site-footer .social-link:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    transform: translateY(-3px);
+}
+
+.site-footer .footer-divider {
+    border-color: rgba(255,255,255,0.10);
+    margin: 2rem 0 1.2rem;
+    opacity: 1;
+}
+
+.site-footer .footer-copyright {
+    color: var(--footer-muted);
+    font-size: 0.86rem;
+    margin: 0;
+}
+
+/* ---------- Кнопка "Нагору" ---------- */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: #fff;
+    font-size: 1.3rem;
+    box-shadow: 0 6px 18px rgba(74,144,226,0.40);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.scroll-top-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), #2A5F9E);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(74,144,226,0.55);
+}
+
+/* ---------- Адаптивність ---------- */
+@media (max-width: 991px) {
+    .nav-link {
+        padding: 0.55rem 0 !important;
+    }
+    .dropdown-menu {
+        box-shadow: none;
+        border: 1px solid var(--border-color);
+        margin-left: 0.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .carousel-caption {
+        padding: 1.2rem 1.4rem;
+        bottom: 5%;
+    }
+    .carousel-caption h1 {
+        font-size: 1.5rem;
+    }
+    .carousel-caption p {
+        font-size: 0.9rem;
+    }
+    .welcome-section { padding: 3rem 0; }
+    .scroll-top-btn {
+        bottom: 16px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
+        font-size: 1.1rem;
+    }
+    .site-footer { text-align: center; }
+    .site-footer .footer-title { justify-content: center; }
+    .site-footer .footer-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .site-footer .footer-contacts li {
+        justify-content: center;
+        text-align: left;
+    }
+    .site-footer .social-links { justify-content: center; }
+}
+
+/* ---------- Допоміжні утиліти ---------- */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.bg-soft-primary { background: rgba(74,144,226,0.08); }
+.bg-soft-secondary { background: rgba(80,227,194,0.10); }
+
+.shadow-soft { box-shadow: var(--shadow-sm); }
+.shadow-medium { box-shadow: var(--shadow-md); }
+.shadow-strong { box-shadow: var(--shadow-lg); }

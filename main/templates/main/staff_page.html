@@ -1,0 +1,577 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Керівництво | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero */
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%);
+        padding: 70px 0 50px;
+        position: relative;
+        overflow: hidden;
+    }
+    .page-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15), transparent 55%);
+    }
+    .page-hero .container { position: relative; z-index: 1; }
+    .breadcrumb-item a { color: rgba(255,255,255,0.85); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* Intro */
+    .staff-intro {
+        background: #fff;
+        border-radius: 18px;
+        padding: 2rem 2.5rem;
+        box-shadow: 0 6px 25px rgba(44,62,80,0.07);
+        margin-bottom: 2.5rem;
+        border: 1px solid rgba(74,144,226,0.08);
+    }
+    .staff-intro .lead { color: #3A4654; margin-bottom: 0; }
+
+    /* Featured (director) card */
+    .featured-card {
+        background: linear-gradient(135deg, #fff 0%, #F8FAFD 100%);
+        border-radius: 22px;
+        overflow: hidden;
+        box-shadow: 0 16px 50px rgba(74,144,226,0.18);
+        margin-bottom: 2.5rem;
+        position: relative;
+        border: 2px solid rgba(74,144,226,0.15);
+    }
+    .featured-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #4A90E2, #50E3C2, #FFB84D, #FF8FA3);
+    }
+    .featured-card .row { align-items: stretch; }
+    .featured-photo {
+        position: relative;
+        background: linear-gradient(135deg, #E8F4FD, #D8EAFB);
+        padding: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .featured-photo img {
+        width: 280px;
+        height: 280px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 6px solid #fff;
+        box-shadow: 0 10px 30px rgba(74,144,226,0.25);
+    }
+    .featured-badge {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #FFD93D, #FFB000);
+        color: #5C3F00;
+        padding: 0.4rem 1rem;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 14px rgba(255,200,0,0.4);
+    }
+    .featured-body {
+        padding: 2.5rem 2.5rem 2.5rem 1rem;
+    }
+    .featured-body .position-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+        color: #fff;
+        padding: 0.3rem 0.9rem;
+        border-radius: 25px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+    .featured-body h2 {
+        font-size: 1.85rem;
+        font-weight: 800;
+        color: #2C3E50;
+        margin-bottom: 1rem;
+    }
+    .featured-body .info-row {
+        display: flex;
+        gap: 0.85rem;
+        align-items: flex-start;
+        margin-bottom: 0.7rem;
+        font-size: 0.95rem;
+        color: #3A4654;
+    }
+    .featured-body .info-row i {
+        color: #4A90E2;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        margin-top: 3px;
+        width: 22px;
+        text-align: center;
+    }
+    .featured-body .info-row strong { color: #2C3E50; }
+    .featured-body .awards-block {
+        margin-top: 1.2rem;
+        padding: 1rem 1.2rem;
+        background: linear-gradient(135deg, #FFF9E5, #FFEAB3);
+        border-radius: 12px;
+        border-left: 4px solid #FFB84D;
+    }
+    .featured-body .awards-block h4 {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #7B5500;
+        margin-bottom: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .featured-body .awards-block ul {
+        margin: 0;
+        padding-left: 1.2rem;
+        font-size: 0.9rem;
+        color: #5C3F00;
+    }
+    .featured-body .awards-block li { margin-bottom: 0.25rem; }
+
+    .contact-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 1.2rem;
+    }
+    .contact-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.45rem 1rem;
+        background: #fff;
+        border: 2px solid #E5ECF4;
+        border-radius: 25px;
+        color: #4A90E2;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .contact-pill:hover {
+        background: #4A90E2;
+        color: #fff;
+        border-color: #4A90E2;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 14px rgba(74,144,226,0.3);
+    }
+
+    /* Regular staff card */
+    .staff-card {
+        background: #fff;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(44,62,80,0.08);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid rgba(74,144,226,0.06);
+    }
+    .staff-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(44,62,80,0.16);
+    }
+    .staff-card-photo {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #E8F4FD, #D8EAFB);
+    }
+    .staff-card-photo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+    }
+    .staff-card:hover .staff-card-photo img { transform: scale(1.04); }
+    .staff-card-photo .photo-overlay {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        padding: 0.5rem 1rem;
+        background: linear-gradient(transparent, rgba(0,0,0,0.6));
+    }
+
+    .staff-card-body {
+        padding: 1.5rem 1.5rem 1.7rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .staff-card-position {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        padding: 0.25rem 0.7rem;
+        border-radius: 20px;
+        margin-bottom: 0.65rem;
+        align-self: flex-start;
+    }
+    .staff-card.accent-primary .staff-card-position   { background: #E8F4FD; color: #2E6BB8; }
+    .staff-card.accent-success .staff-card-position   { background: #E0FAF3; color: #1F9B82; }
+    .staff-card.accent-warning .staff-card-position   { background: #FFF4DC; color: #B57B00; }
+    .staff-card.accent-danger  .staff-card-position   { background: #FCE6E9; color: #B23A48; }
+    .staff-card.accent-info    .staff-card-position   { background: #E2F6FB; color: #1A8DAE; }
+    .staff-card.accent-purple  .staff-card-position   { background: #EFE5FB; color: #6231BE; }
+
+    .staff-card h5 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 0.4rem;
+        line-height: 1.35;
+    }
+    .staff-card .staff-meta {
+        font-size: 0.85rem;
+        color: #6C7A89;
+        margin-bottom: 0.85rem;
+        line-height: 1.55;
+    }
+    .staff-card .staff-meta i { color: #4A90E2; margin-right: 5px; }
+    .staff-card-contacts {
+        margin-top: auto;
+        padding-top: 0.85rem;
+        border-top: 1px solid #F0F4F9;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    .staff-card-contacts a {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        padding: 0.45rem;
+        background: #F8FAFD;
+        border-radius: 8px;
+        color: #4A90E2;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: background 0.2s, color 0.2s;
+    }
+    .staff-card-contacts a:hover { background: #4A90E2; color: #fff; }
+
+    .staff-detail-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        margin-top: 0.85rem;
+        padding: 0.55rem 1rem;
+        border-radius: 25px;
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.88rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 12px rgba(74,144,226,0.25);
+    }
+    .staff-card.accent-primary  .staff-detail-btn { background: linear-gradient(135deg, #4A90E2, #357ABD); box-shadow: 0 4px 12px rgba(74,144,226,0.25); }
+    .staff-card.accent-success  .staff-detail-btn { background: linear-gradient(135deg, #50E3C2, #34C8A8); box-shadow: 0 4px 12px rgba(80,227,194,0.30); }
+    .staff-card.accent-warning  .staff-detail-btn { background: linear-gradient(135deg, #FFB84D, #FF9F1A); box-shadow: 0 4px 12px rgba(255,184,77,0.30); }
+    .staff-card.accent-danger   .staff-detail-btn { background: linear-gradient(135deg, #FF6B6B, #E5677E); box-shadow: 0 4px 12px rgba(255,107,107,0.30); }
+    .staff-card.accent-info     .staff-detail-btn { background: linear-gradient(135deg, #38C2DD, #2DA0BB); box-shadow: 0 4px 12px rgba(56,194,221,0.30); }
+    .staff-card.accent-purple   .staff-detail-btn { background: linear-gradient(135deg, #B388FF, #7C4DCB); box-shadow: 0 4px 12px rgba(179,136,255,0.30); }
+    .staff-detail-btn:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+    }
+    .staff-detail-btn i { transition: transform 0.2s; }
+    .staff-detail-btn:hover i { transform: translateX(3px); }
+
+    .featured-detail-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 1.2rem;
+        padding: 0.7rem 1.4rem;
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 18px rgba(74,144,226,0.35);
+    }
+    .featured-detail-btn:hover {
+        transform: translateY(-2px);
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(74,144,226,0.50);
+    }
+
+    /* Stats banner */
+    .staff-stats {
+        background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%);
+        border-radius: 22px;
+        padding: 2rem;
+        margin: 2.5rem 0;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+    .staff-stats::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.10), transparent 70%);
+        border-radius: 50%;
+    }
+    .staff-stats .row { position: relative; z-index: 1; }
+    .stat-item { text-align: center; }
+    .stat-num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-bottom: 0.3rem;
+    }
+    .stat-label { font-size: 0.88rem; opacity: 0.92; }
+
+    @media (max-width: 767px) {
+        .featured-photo { padding: 1.5rem; }
+        .featured-photo img { width: 200px; height: 200px; }
+        .featured-body { padding: 1.8rem; }
+        .featured-body h2 { font-size: 1.4rem; }
+        .featured-badge { top: 14px; right: 14px; font-size: 0.75rem; padding: 0.3rem 0.7rem; }
+        .staff-stats { padding: 1.5rem; }
+        .stat-num { font-size: 1.6rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Керівництво</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1">
+            <i class="bi bi-people-fill me-2"></i>Керівництво закладу
+        </h1>
+        <p class="text-white-50 mb-0 lead">Досвідчена команда, що дбає про ваших дітей</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+
+        {# Вступ #}
+        {% if page.content %}
+        <div class="staff-intro">
+            {{ page.content|safe }}
+        </div>
+        {% endif %}
+
+        {# 1. Виділені (директор/головна особа) #}
+        {% for member in featured_members %}
+        <div class="featured-card">
+            <span class="featured-badge"><i class="bi bi-star-fill me-1"></i>Керівник</span>
+            <div class="row g-0">
+                <div class="col-md-5 featured-photo">
+                    {% if member.photo %}
+                    <img src="{{ member.photo.url }}" alt="{{ member.full_name }}">
+                    {% else %}
+                    <img src="/media/staff/avatar-director.svg" alt="{{ member.full_name }}">
+                    {% endif %}
+                </div>
+                <div class="col-md-7 featured-body">
+                    <span class="position-badge"><i class="bi bi-mortarboard-fill me-1"></i>{{ member.position }}</span>
+                    <h2>{{ member.full_name }}</h2>
+
+                    {% if member.education %}
+                    <div class="info-row">
+                        <i class="bi bi-book"></i>
+                        <span><strong>Освіта:</strong> {{ member.education }}</span>
+                    </div>
+                    {% endif %}
+                    {% if member.category %}
+                    <div class="info-row">
+                        <i class="bi bi-patch-check"></i>
+                        <span><strong>Категорія / Звання:</strong> {{ member.category }}</span>
+                    </div>
+                    {% endif %}
+                    {% if member.experience %}
+                    <div class="info-row">
+                        <i class="bi bi-clock-history"></i>
+                        <span><strong>Стаж:</strong> {{ member.experience }}</span>
+                    </div>
+                    {% endif %}
+                    {% if member.reception_hours %}
+                    <div class="info-row">
+                        <i class="bi bi-calendar2-week"></i>
+                        <span><strong>Години прийому:</strong> {{ member.reception_hours }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if member.awards_list %}
+                    <div class="awards-block">
+                        <h4><i class="bi bi-award me-1"></i>Нагороди та звання</h4>
+                        <ul>
+                            {% for award in member.awards_list %}
+                            <li>{{ award }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    {% if member.bio %}
+                    <div class="mt-3 text-muted small">
+                        {{ member.bio|safe }}
+                    </div>
+                    {% endif %}
+
+                    <div class="contact-pills">
+                        {% if member.phone %}
+                        <a href="tel:{{ member.phone|cut:' '|cut:'-' }}" class="contact-pill">
+                            <i class="bi bi-telephone-fill"></i>{{ member.phone }}
+                        </a>
+                        {% endif %}
+                        {% if member.email %}
+                        <a href="mailto:{{ member.email }}" class="contact-pill">
+                            <i class="bi bi-envelope-fill"></i>{{ member.email }}
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    {% if member.detail_url %}
+                    <a href="{{ member.detail_url }}" class="featured-detail-btn mt-3">
+                        <i class="bi bi-arrow-right-circle-fill"></i>
+                        Дізнатися більше про директора
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {# Статистика #}
+        <div class="staff-stats">
+            <div class="row g-3">
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-num">80</div>
+                        <div class="stat-label">працівників</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-num">41</div>
+                        <div class="stat-label">педагогів</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-num">12</div>
+                        <div class="stat-label">вища категорія</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-item">
+                        <div class="stat-num">40+</div>
+                        <div class="stat-label">років роботи</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 2. Інші члени команди #}
+        {% if other_members %}
+        <h2 class="text-center mb-4" style="color:#2C3E50;">
+            <i class="bi bi-people me-2 text-primary"></i>Адміністрація та фахівці
+        </h2>
+        <div class="row g-4">
+            {% for member in other_members %}
+            <div class="col-md-6 col-lg-4">
+                <div class="staff-card accent-{{ member.accent_color }}">
+                    <div class="staff-card-photo">
+                        {% if member.photo %}
+                        <img src="{{ member.photo.url }}" alt="{{ member.full_name }}">
+                        {% else %}
+                        <img src="/media/staff/avatar-female-1.svg" alt="{{ member.full_name }}">
+                        {% endif %}
+                    </div>
+                    <div class="staff-card-body">
+                        <span class="staff-card-position">{{ member.position }}</span>
+                        <h5>{{ member.full_name }}</h5>
+
+                        <div class="staff-meta">
+                            {% if member.education %}<div><i class="bi bi-book"></i>{{ member.education }}</div>{% endif %}
+                            {% if member.category %}<div><i class="bi bi-patch-check"></i>{{ member.category }}</div>{% endif %}
+                            {% if member.experience %}<div><i class="bi bi-clock-history"></i>{{ member.experience }}</div>{% endif %}
+                            {% if member.reception_hours %}<div><i class="bi bi-calendar2-week"></i>{{ member.reception_hours }}</div>{% endif %}
+                        </div>
+
+                        {% if member.awards_list %}
+                        <div class="staff-meta">
+                            {% for award in member.awards_list %}
+                            <div><i class="bi bi-award-fill" style="color:#FFB84D;"></i>{{ award }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if member.phone or member.email %}
+                        <div class="staff-card-contacts">
+                            {% if member.phone %}
+                            <a href="tel:{{ member.phone|cut:' '|cut:'-' }}"><i class="bi bi-telephone-fill"></i></a>
+                            {% endif %}
+                            {% if member.email %}
+                            <a href="mailto:{{ member.email }}"><i class="bi bi-envelope-fill"></i></a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        {% if member.detail_url %}
+                        <a href="{{ member.detail_url }}" class="staff-detail-btn">
+                            <i class="bi bi-person-vcard-fill"></i>
+                            Повна сторінка
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {# Заклик до контакту #}
+        <div class="text-center mt-5 p-4 rounded-3" style="background:linear-gradient(135deg,#FFF9E5,#FFEAB3);">
+            <i class="bi bi-chat-heart-fill fs-2 text-warning"></i>
+            <h4 class="mt-2 mb-2" style="color:#7B5500;">Маєте запитання?</h4>
+            <p class="mb-3" style="color:#5C3F00;">Звертайтеся до адміністрації — ми завжди раді поспілкуватися з батьками!</p>
+            <a href="{% url 'main:contacts' %}" class="btn btn-warning fw-bold">
+                <i class="bi bi-geo-alt-fill me-1"></i>Контакти закладу
+            </a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

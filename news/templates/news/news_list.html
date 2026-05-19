@@ -1,0 +1,253 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Новини | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+        margin-bottom: 0;
+    }
+    .news-card .card-img-top {
+        height: 220px;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    .news-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    .news-card {
+        overflow: hidden;
+        border-radius: 12px !important;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+    .news-card .card-img-wrap {
+        overflow: hidden;
+    }
+    .news-card .card-img-placeholder {
+        height: 220px;
+        background: linear-gradient(135deg, #e8f4fd 0%, #d1e8f9 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .category-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .meta-info {
+        font-size: 0.82rem;
+        color: #6c757d;
+    }
+    .sidebar-widget {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+    .sidebar-widget .widget-header {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        color: white;
+        padding: 15px 20px;
+        font-weight: 600;
+    }
+    .category-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        text-decoration: none;
+        color: #333;
+        transition: background 0.2s, color 0.2s;
+    }
+    .category-link:hover {
+        background: #f8f9fa;
+        color: #4A90E2;
+    }
+    .category-link:last-child {
+        border-bottom: none;
+    }
+    .breadcrumb-item a {
+        color: rgba(255,255,255,0.8);
+        text-decoration: none;
+    }
+    .breadcrumb-item.active {
+        color: white;
+    }
+    .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.6);
+    }
+    .pagination .page-link {
+        color: #4A90E2;
+        border-radius: 6px !important;
+        margin: 0 2px;
+        border: 1px solid #dee2e6;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #4A90E2;
+        border-color: #4A90E2;
+    }
+    .no-news-placeholder {
+        padding: 80px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок сторінки -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Новини</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-0">
+            <i class="bi bi-newspaper me-2"></i>Новини та оголошення
+        </h1>
+        <p class="text-white-50 mt-2 mb-0">Актуальні події та анонси ЗДО №52</p>
+    </div>
+</section>
+
+<!-- Основний контент -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+
+            <!-- Список новин -->
+            <div class="col-lg-8">
+
+                {% if page_obj.object_list %}
+                    <div class="row g-4">
+                        {% for news_item in page_obj %}
+                        <div class="col-md-6">
+                            <div class="card news-card h-100">
+                                <div class="card-img-wrap">
+                                    {% if news_item.image %}
+                                        <img src="{{ news_item.image.url }}" class="card-img-top" alt="{{ news_item.title }}">
+                                    {% else %}
+                                        <div class="card-img-placeholder">
+                                            <i class="bi bi-newspaper fs-1 text-primary opacity-50"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body d-flex flex-column">
+                                    {% if news_item.category %}
+                                    <a href="{% url 'news:news_by_category' news_item.category.slug %}"
+                                       class="badge bg-primary text-decoration-none category-badge mb-2 align-self-start">
+                                        {{ news_item.category.name }}
+                                    </a>
+                                    {% endif %}
+                                    <h5 class="card-title">
+                                        <a href="{% url 'news:news_detail' news_item.slug %}" class="text-decoration-none text-dark stretched-link">
+                                            {{ news_item.title }}
+                                        </a>
+                                    </h5>
+                                    <div class="meta-info mt-auto pt-3 border-top d-flex justify-content-between">
+                                        <span><i class="bi bi-calendar3 me-1"></i>{{ news_item.created_at|date:"d.m.Y" }}</span>
+                                        <span><i class="bi bi-eye me-1"></i>{{ news_item.views }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Пагінація -->
+                    {% if page_obj.has_other_pages %}
+                    <nav class="mt-5 d-flex justify-content-center" aria-label="Сторінки">
+                        <ul class="pagination">
+                            {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                                    <i class="bi bi-chevron-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+
+                {% else %}
+                    <div class="text-center no-news-placeholder">
+                        <i class="bi bi-newspaper fs-1 text-muted d-block mb-3"></i>
+                        <h4 class="text-muted">Новин поки немає</h4>
+                        <p class="text-muted">Незабаром тут з'являться актуальні матеріали</p>
+                    </div>
+                {% endif %}
+
+            </div>
+
+            <!-- Сайдбар -->
+            <div class="col-lg-4">
+
+                <!-- Категорії -->
+                {% if categories %}
+                <div class="sidebar-widget mb-4">
+                    <div class="widget-header">
+                        <i class="bi bi-tags me-2"></i>Категорії
+                    </div>
+                    <div class="bg-white">
+                        <a href="{% url 'news:news_list' %}" class="category-link">
+                            <span>Всі новини</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        {% for category in categories %}
+                        <a href="{% url 'news:news_by_category' category.slug %}" class="category-link">
+                            <span>{{ category.name }}</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Корисні посилання -->
+                <div class="sidebar-widget">
+                    <div class="widget-header">
+                        <i class="bi bi-link-45deg me-2"></i>Розділи сайту
+                    </div>
+                    <div class="bg-white">
+                        <a href="{% url 'gallery:gallery_list' %}" class="category-link">
+                            <span><i class="bi bi-images me-2 text-primary"></i>Фотогалерея</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'documents:documents_list' %}" class="category-link">
+                            <span><i class="bi bi-file-earmark-text me-2 text-primary"></i>Документи</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                        <a href="{% url 'main:contacts' %}" class="category-link">
+                            <span><i class="bi bi-geo-alt me-2 text-primary"></i>Контакти</span>
+                            <i class="bi bi-chevron-right text-muted"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

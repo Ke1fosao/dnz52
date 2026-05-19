@@ -1,0 +1,677 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Батьківська сторінка | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%);
+        padding: 70px 0 50px;
+        position: relative;
+        overflow: hidden;
+    }
+    .page-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15), transparent 55%);
+    }
+    .page-hero .container { position: relative; z-index: 1; }
+    .breadcrumb-item a { color: rgba(255,255,255,0.85); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    .section-block {
+        background: #fff;
+        border-radius: 18px;
+        padding: 2rem 2.2rem;
+        box-shadow: 0 6px 25px rgba(44, 62, 80, 0.07);
+        margin-bottom: 2rem;
+        border: 1px solid rgba(74,144,226,0.08);
+    }
+
+    .section-block-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 700;
+        font-size: 1.3rem;
+        color: #2C3E50;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.85rem;
+        border-bottom: 2px solid #F0F4F9;
+    }
+    .section-block-title .icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #4A90E2, #50E3C2);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    /* Announcement */
+    .announcement-card {
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 35px rgba(220, 53, 69, 0.15);
+        background: #fff;
+        margin-bottom: 1.5rem;
+        border: 3px solid #FF6B6B;
+    }
+    .announcement-card img {
+        width: 100%;
+        display: block;
+        max-height: 600px;
+        object-fit: contain;
+        background: #fff;
+    }
+    .announcement-caption {
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #FFEAEA, #FFE0E0);
+        font-weight: 600;
+        color: #B23A48;
+        text-align: center;
+        border-top: 1px solid rgba(178, 58, 72, 0.15);
+    }
+
+    /* Document cards */
+    .doc-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.2rem 1.4rem;
+        border-radius: 14px;
+        background: #fff;
+        border: 2px solid var(--border-color, #E5ECF4);
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+        height: 100%;
+    }
+    .doc-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(74,144,226,0.18);
+        border-color: rgba(74,144,226,0.3);
+        color: inherit;
+    }
+    .doc-card-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.7rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .doc-card.accent-primary  .doc-card-icon { background: linear-gradient(135deg, #4A90E2, #357ABD); }
+    .doc-card.accent-success  .doc-card-icon { background: linear-gradient(135deg, #50E3C2, #34C8A8); }
+    .doc-card.accent-danger   .doc-card-icon { background: linear-gradient(135deg, #FF6B6B, #E5677E); }
+    .doc-card.accent-warning  .doc-card-icon { background: linear-gradient(135deg, #FFB84D, #FF9F1A); }
+    .doc-card.accent-info     .doc-card-icon { background: linear-gradient(135deg, #38C2DD, #2DA0BB); }
+    .doc-card.accent-secondary .doc-card-icon { background: linear-gradient(135deg, #7B8AA5, #5E6B83); }
+
+    .doc-card-body { flex-grow: 1; min-width: 0; }
+    .doc-card-title {
+        font-weight: 700;
+        color: #2C3E50;
+        margin-bottom: 0.2rem;
+        font-size: 1rem;
+        line-height: 1.35;
+    }
+    .doc-card-desc {
+        color: #6C7A89;
+        font-size: 0.86rem;
+        margin: 0;
+        line-height: 1.5;
+    }
+    .doc-card-arrow {
+        color: #4A90E2;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        transition: transform 0.25s;
+    }
+    .doc-card:hover .doc-card-arrow {
+        transform: translateX(4px);
+    }
+
+    /* Adaptation photos */
+    .photo-tile {
+        position: relative;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+        transition: transform 0.3s, box-shadow 0.3s;
+        background: #f5f7fb;
+        aspect-ratio: 3 / 4;
+    }
+    .photo-tile:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+    }
+    .photo-tile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.4s;
+    }
+    .photo-tile:hover img { transform: scale(1.06); }
+    .photo-tile .photo-caption {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 0.5rem 0.75rem;
+        background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        color: #fff;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .photo-empty {
+        background: linear-gradient(135deg, #F0F4F9, #E5ECF4);
+        border: 2px dashed #B7C8DA;
+        border-radius: 14px;
+        aspect-ratio: 3 / 4;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #8B98AB;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    /* Enrollment docs */
+    .enrollment-list { counter-reset: enroll; padding: 0; margin: 0; list-style: none; }
+    .enrollment-item {
+        counter-increment: enroll;
+        position: relative;
+        padding: 1.2rem 1.4rem 1.2rem 4.5rem;
+        background: #F8FAFD;
+        border-radius: 14px;
+        margin-bottom: 0.75rem;
+        border-left: 4px solid #4A90E2;
+        transition: background 0.2s, transform 0.2s;
+    }
+    .enrollment-item:hover {
+        background: #EDF4FB;
+        transform: translateX(4px);
+    }
+    .enrollment-item::before {
+        content: counter(enroll);
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 38px;
+        height: 38px;
+        background: linear-gradient(135deg, #4A90E2, #50E3C2);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    .enrollment-item-title {
+        font-weight: 600;
+        color: #2C3E50;
+        margin: 0;
+    }
+    .enrollment-item-note {
+        margin: 0.2rem 0 0;
+        font-size: 0.85rem;
+        color: #6C7A89;
+    }
+
+    /* Application sample */
+    .sample-card {
+        background: #fff;
+        border-radius: 14px;
+        overflow: hidden;
+        border: 2px solid #E5ECF4;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+        height: 100%;
+    }
+    .sample-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(74,144,226,0.15);
+        border-color: rgba(74,144,226,0.3);
+    }
+    .sample-card-image {
+        position: relative;
+        background: #F8FAFD;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    .sample-card-image img {
+        max-width: 100%;
+        max-height: 520px;
+        width: auto;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+        cursor: zoom-in;
+    }
+    .sample-card-caption {
+        padding: 1rem 1.4rem;
+        border-top: 1px solid #F0F4F9;
+        text-align: center;
+        font-size: 0.95rem;
+        color: #6C7A89;
+    }
+
+    /* Lightbox-style preview */
+    .sample-lightbox {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 25, 40, 0.92);
+        z-index: 1080;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+    .sample-lightbox.open { display: flex; }
+    .sample-lightbox img {
+        max-width: 95vw;
+        max-height: 92vh;
+        border-radius: 10px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    }
+    .sample-lightbox .lb-close {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.15);
+        color: #fff;
+        border: none;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .sample-lightbox .lb-close:hover { background: rgba(255,255,255,0.30); }
+
+    /* Adaptation collapsible */
+    .adaptation-text {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: #3A4654;
+    }
+    .adaptation-text h3 {
+        color: #2C3E50;
+        font-size: 1.2rem;
+        margin-top: 1.6rem;
+        margin-bottom: 0.8rem;
+    }
+    .adaptation-text h4 {
+        color: #4A90E2;
+        font-size: 1.05rem;
+        margin-top: 1.2rem;
+        margin-bottom: 0.6rem;
+    }
+    .adaptation-text blockquote {
+        border-left: 4px solid #50E3C2;
+        background: #F0FAF8;
+        padding: 0.8rem 1.1rem;
+        border-radius: 0 8px 8px 0;
+        color: #34C8A8;
+        font-style: italic;
+        margin: 1rem 0;
+    }
+    .adaptation-text ul, .adaptation-text ol { padding-left: 1.4rem; }
+    .adaptation-text li { margin-bottom: 0.4rem; }
+
+    .show-more-btn {
+        margin-top: 1rem;
+        background: transparent;
+        border: 2px solid #4A90E2;
+        color: #4A90E2;
+        padding: 0.5rem 1.25rem;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.25s;
+    }
+    .show-more-btn:hover {
+        background: #4A90E2;
+        color: #fff;
+    }
+
+    .collapsed-content {
+        max-height: 320px;
+        overflow: hidden;
+        position: relative;
+        transition: max-height 0.4s ease;
+    }
+    .collapsed-content::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 80px;
+        background: linear-gradient(transparent, #fff);
+        pointer-events: none;
+    }
+    .collapsed-content.expanded {
+        max-height: 9999px;
+    }
+    .collapsed-content.expanded::after { display: none; }
+
+    @media (max-width: 767px) {
+        .section-block { padding: 1.5rem 1.2rem; }
+        .doc-card { padding: 1rem; gap: 0.75rem; }
+        .doc-card-icon { width: 48px; height: 48px; font-size: 1.4rem; }
+        .doc-card-title { font-size: 0.95rem; }
+        .enrollment-item { padding-left: 4rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Батьківська сторінка</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1">
+            <i class="bi bi-house-heart-fill me-2"></i>Батьківська сторінка
+        </h1>
+        <p class="text-white-50 mb-0 lead">Усе найважливіше для батьків наших вихованців</p>
+    </div>
+</section>
+
+<!-- Вступ -->
+{% if page.content %}
+<section class="py-4">
+    <div class="container">
+        <div class="section-block">
+            {{ page.content|safe }}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 1. Оголошення -->
+{% if announcements %}
+<section class="py-3">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                {% for ann in announcements %}
+                <div class="announcement-card">
+                    {% if ann.link %}
+                    <a href="{{ ann.link }}" target="_blank" rel="noopener">
+                        <img src="{{ ann.image.url }}" alt="{{ ann.title|default:'Оголошення' }}">
+                    </a>
+                    {% else %}
+                    <img src="{{ ann.image.url }}" alt="{{ ann.title|default:'Оголошення' }}">
+                    {% endif %}
+                    {% if ann.title %}
+                    <div class="announcement-caption">
+                        <i class="bi bi-megaphone-fill me-1"></i>{{ ann.title }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 2. Документи / Корисні посилання -->
+{% if documents %}
+<section class="py-3">
+    <div class="container">
+        <div class="section-block">
+            <div class="section-block-title">
+                <span class="icon-wrap"><i class="bi bi-file-earmark-text-fill"></i></span>
+                Корисні документи та посилання
+            </div>
+            <div class="row g-3">
+                {% for doc in documents %}
+                <div class="col-md-6 col-lg-4 d-flex">
+                    <a href="{{ doc.get_url }}"
+                       {% if doc.is_external %}target="_blank" rel="noopener"{% endif %}
+                       class="doc-card accent-{{ doc.accent }}">
+                        <div class="doc-card-icon">
+                            <i class="bi {{ doc.icon }}"></i>
+                        </div>
+                        <div class="doc-card-body">
+                            <div class="doc-card-title">{{ doc.title }}</div>
+                            {% if doc.description %}
+                            <p class="doc-card-desc">{{ doc.description }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="doc-card-arrow">
+                            {% if doc.is_external %}
+                            <i class="bi bi-box-arrow-up-right"></i>
+                            {% else %}
+                            <i class="bi bi-chevron-right"></i>
+                            {% endif %}
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 3. Поради щодо адаптації + фото -->
+<section class="py-3">
+    <div class="container">
+        <div class="section-block">
+            <div class="section-block-title">
+                <span class="icon-wrap" style="background:linear-gradient(135deg,#FFB84D,#FF8FA3);">
+                    <i class="bi bi-stars"></i>
+                </span>
+                Поради щодо адаптації дітей
+            </div>
+
+            <!-- Фото-галерея -->
+            <div class="row g-3 mb-4">
+                {% for photo in photos %}
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="photo-tile">
+                        <img src="{{ photo.image.url }}" alt="{{ photo.title|default:'Поради' }}" loading="lazy">
+                        {% if photo.title %}
+                        <div class="photo-caption">{{ photo.title }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                {# Якщо фото ще не додані — показуємо плейсхолдери з підказкою #}
+                {% for i in "123456" %}
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="photo-empty">
+                        <i class="bi bi-image fs-2 mb-2"></i>
+                        <small>Завантажте фото в адмінці</small>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endfor %}
+            </div>
+
+            <!-- Текст порад -->
+            {% if adaptation_page %}
+            <div class="adaptation-text collapsed-content" id="adaptationText">
+                {{ adaptation_page.content|safe }}
+            </div>
+            <div class="text-center">
+                <button type="button" class="show-more-btn" id="adaptationToggle">
+                    <i class="bi bi-arrow-down-circle me-1"></i>Показати повністю
+                </button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- 4. Перелік документів для зарахування -->
+{% if enrollment_docs %}
+<section class="py-3{% if not application_samples %} pb-5{% endif %}">
+    <div class="container">
+        <div class="section-block">
+            <div class="section-block-title">
+                <span class="icon-wrap" style="background:linear-gradient(135deg,#50E3C2,#34C8A8);">
+                    <i class="bi bi-clipboard-check-fill"></i>
+                </span>
+                Перелік документів для зарахування дитини до ЗДО №52
+            </div>
+            <ol class="enrollment-list">
+                {% for d in enrollment_docs %}
+                <li class="enrollment-item">
+                    <p class="enrollment-item-title">{{ d.title }}</p>
+                    {% if d.note %}
+                    <p class="enrollment-item-note"><i class="bi bi-info-circle me-1"></i>{{ d.note }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ol>
+            <div class="alert alert-info mt-4 mb-0 d-flex align-items-start gap-3">
+                <i class="bi bi-info-circle-fill fs-4 text-primary"></i>
+                <div>
+                    Для отримання додаткової інформації звертайтеся за телефоном
+                    <a href="tel:+380362648398" class="fw-bold">64-83-98</a> або на електронну пошту
+                    <a href="mailto:sadok52@ukr.net" class="fw-bold">sadok52@ukr.net</a>.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- 5. Зразок заяви -->
+{% if application_samples %}
+<section class="py-3 pb-5">
+    <div class="container">
+        <div class="section-block">
+            <div class="section-block-title">
+                <span class="icon-wrap" style="background:linear-gradient(135deg,#FFB84D,#FF9F1A);">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                </span>
+                {% if application_samples|length == 1 %}{{ application_samples.0.title }}{% else %}Зразки заяв{% endif %}
+            </div>
+
+            <p class="text-muted mb-4">
+                <i class="bi bi-lightbulb-fill text-warning me-2"></i>
+                Нижче наведено зразок заяви, яку слід заповнити для зарахування дитини до закладу. Клацніть на зображення, щоб збільшити.
+            </p>
+
+            <div class="row g-4 justify-content-center">
+                {% for sample in application_samples %}
+                <div class="col-md-{% if application_samples|length == 1 %}10{% else %}6{% endif %}">
+                    <div class="sample-card">
+                        <div class="sample-card-image">
+                            <img src="{{ sample.image.url }}"
+                                 alt="{{ sample.title }}"
+                                 data-lightbox="sample"
+                                 loading="lazy">
+                        </div>
+                        {% if sample.caption or sample.title %}
+                        <div class="sample-card-caption">
+                            {% if sample.caption %}{{ sample.caption }}{% else %}{{ sample.title }}{% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox для перегляду зразка -->
+<div class="sample-lightbox" id="sampleLightbox" role="dialog" aria-hidden="true">
+    <button type="button" class="lb-close" aria-label="Закрити">
+        <i class="bi bi-x-lg"></i>
+    </button>
+    <img src="" alt="" id="sampleLightboxImg">
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    /* Розгортання тексту порад про адаптацію */
+    var content = document.getElementById('adaptationText');
+    var btn = document.getElementById('adaptationToggle');
+    if (content && btn) {
+        if (content.scrollHeight <= 340) {
+            content.classList.add('expanded');
+            btn.style.display = 'none';
+        } else {
+            btn.addEventListener('click', function () {
+                var expanded = content.classList.toggle('expanded');
+                btn.innerHTML = expanded
+                    ? '<i class="bi bi-arrow-up-circle me-1"></i>Згорнути'
+                    : '<i class="bi bi-arrow-down-circle me-1"></i>Показати повністю';
+                if (!expanded) {
+                    content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
+    }
+
+    /* Lightbox для зразка заяви */
+    var lightbox = document.getElementById('sampleLightbox');
+    var lightboxImg = document.getElementById('sampleLightboxImg');
+    if (lightbox && lightboxImg) {
+        var closeBtn = lightbox.querySelector('.lb-close');
+
+        document.querySelectorAll('[data-lightbox="sample"]').forEach(function (img) {
+            img.addEventListener('click', function () {
+                lightboxImg.src = this.src;
+                lightboxImg.alt = this.alt || '';
+                lightbox.classList.add('open');
+                lightbox.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            });
+        });
+
+        var closeLightbox = function () {
+            lightbox.classList.remove('open');
+            lightbox.setAttribute('aria-hidden', 'true');
+            lightboxImg.src = '';
+            document.body.style.overflow = '';
+        };
+
+        if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function (e) {
+            if (e.target === lightbox) closeLightbox();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+        });
+    }
+})();
+</script>
+{% endblock %}

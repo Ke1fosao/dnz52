@@ -1,0 +1,386 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Головна | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero fallback (якщо немає слайдів) */
+    .hero-empty {
+        background: linear-gradient(135deg, #4A90E2 0%, #50E3C2 100%);
+        min-height: 460px;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+    .hero-empty::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.18), transparent 50%);
+    }
+    .hero-empty .hero-content { position: relative; z-index: 1; }
+    .welcome-img-wrap {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 18px 50px rgba(74,144,226,0.22);
+    }
+    .welcome-img-wrap img { width: 100%; display: block; }
+
+    /* ── Search section ── */
+    .home-search-section {
+        background: linear-gradient(135deg, #F8FAFD 0%, #EDF4FB 100%);
+        padding: 3.5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .home-search-section::before {
+        content: "";
+        position: absolute;
+        top: -50%; right: -10%;
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(74,144,226,0.08), transparent 70%);
+        border-radius: 50%;
+    }
+    .home-search-wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 760px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    .home-search-wrap h2 {
+        color: #2C3E50;
+        font-weight: 800;
+        margin-bottom: 0.6rem;
+    }
+    .home-search-wrap .home-search-sub {
+        color: #6C7A89;
+        margin-bottom: 1.8rem;
+    }
+    .home-search-form {
+        position: relative;
+    }
+    .home-search-form .input-group {
+        box-shadow: 0 12px 40px rgba(74,144,226,0.20);
+        border-radius: 60px;
+        overflow: hidden;
+        background: #fff;
+        border: 2px solid #fff;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .home-search-form .input-group:focus-within {
+        border-color: #4A90E2;
+        box-shadow: 0 12px 50px rgba(74,144,226,0.32);
+    }
+    .home-search-form .input-icon {
+        background: transparent;
+        border: none;
+        padding: 0 1rem 0 1.4rem;
+        color: #4A90E2;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+    }
+    .home-search-form input {
+        border: none;
+        padding: 16px 6px;
+        font-size: 1.05rem;
+        background: transparent;
+    }
+    .home-search-form input:focus {
+        box-shadow: none;
+        outline: none;
+        background: transparent;
+    }
+    .home-search-form .btn {
+        border-radius: 0;
+        padding: 0 28px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+        border: none;
+        font-size: 1rem;
+        color: #fff;
+    }
+    .home-search-form .btn:hover {
+        background: linear-gradient(135deg, #357ABD, #2A5F9E);
+        color: #fff;
+    }
+
+    .quick-search-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 1.2rem;
+    }
+    .quick-search-tags .tag-label {
+        color: #8B98AB;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-right: 4px;
+        align-self: center;
+    }
+    .quick-search-tags a {
+        padding: 5px 14px;
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(4px);
+        color: #4A90E2;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: 1px solid rgba(74,144,226,0.15);
+        transition: all 0.2s;
+    }
+    .quick-search-tags a:hover {
+        background: #4A90E2;
+        color: #fff;
+        border-color: #4A90E2;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(74,144,226,0.25);
+    }
+
+    @media (max-width: 576px) {
+        .home-search-form .input-group { flex-wrap: wrap; border-radius: 18px; }
+        .home-search-form input { flex: 1 1 auto; min-width: 0; }
+        .home-search-form .btn { width: 100%; border-radius: 0 0 16px 16px; padding: 12px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Слайдер -->
+{% if sliders %}
+<section class="hero-slider">
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for slider in sliders %}
+            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ forloop.counter0 }}"
+                    {% if forloop.first %}class="active"{% endif %}></button>
+            {% endfor %}
+        </div>
+
+        <div class="carousel-inner">
+            {% for slider in sliders %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ slider.image.url }}" class="d-block w-100" alt="{{ slider.title }}" style="height: 500px; object-fit: cover;">
+                <div class="carousel-caption">
+                    <div class="container">
+                        <h1 class="display-4 fw-bold">{{ slider.title }}</h1>
+                        <p class="lead">{{ slider.description }}</p>
+                        {% if slider.link %}
+                        <a href="{{ slider.link }}" class="btn btn-primary btn-lg">Дізнатись більше</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+</section>
+{% else %}
+<section class="hero-empty">
+    <div class="container hero-content text-center">
+        <h1 class="display-3 fw-bold mb-3">Ласкаво просимо до ЗДО №52!</h1>
+        <p class="lead mb-4">Затишний дім, де ваша дитина росте, навчається і пізнає світ</p>
+        <a href="{% url 'main:page_detail' 'about' %}" class="btn btn-light btn-lg me-2"><i class="bi bi-info-circle me-1"></i>Про заклад</a>
+        <a href="{% url 'main:contacts' %}" class="btn btn-outline-light btn-lg"><i class="bi bi-geo-alt me-1"></i>Контакти</a>
+    </div>
+</section>
+{% endif %}
+
+<!-- Пошук по сайту -->
+<section class="home-search-section">
+    <div class="container">
+        <div class="home-search-wrap">
+            <h2><i class="bi bi-search me-2 text-primary"></i>Швидкий пошук по сайту</h2>
+            <p class="home-search-sub">Знайдіть новини, документи, спеціалістів, групи, гуртки та багато іншого</p>
+            <form class="home-search-form" method="get" action="{% url 'main:search' %}">
+                <div class="input-group">
+                    <span class="input-icon"><i class="bi bi-search"></i></span>
+                    <input class="form-control" type="search" name="q"
+                           placeholder="Що шукаємо? Наприклад: психолог, новини, правила..."
+                           autocomplete="off">
+                    <button class="btn" type="submit">Шукати</button>
+                </div>
+            </form>
+            <div class="quick-search-tags">
+                <span class="tag-label"><i class="bi bi-lightning-charge-fill text-warning"></i> Популярне:</span>
+                <a href="{% url 'main:search' %}?q=психолог">психолог</a>
+                <a href="{% url 'main:search' %}?q=зарахування">зарахування</a>
+                <a href="{% url 'main:search' %}?q=правила">правила</a>
+                <a href="{% url 'main:search' %}?q=безпека">безпека</a>
+                <a href="{% url 'main:search' %}?q=методична">методична робота</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Привітання -->
+<section class="welcome-section py-5">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="welcome-img-wrap">
+                    <img src="{% static 'images/welcome.svg' %}" alt="ЗДО №52 — затишний дитячий садочок">
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <span class="badge bg-soft-primary text-primary mb-3 px-3 py-2" style="font-size:0.85rem;">
+                    <i class="bi bi-stars me-1"></i>Ласкаво просимо
+                </span>
+                <h2 class="display-5 fw-bold mb-3">Ласкаво просимо до <span class="text-gradient">ЗДО №52!</span></h2>
+                <p class="lead">
+                    Наш заклад дошкільної освіти — це затишний дім для вашої дитини,
+                    де малюки розвиваються, навчаються та отримують турботу від досвідчених педагогів.
+                </p>
+                <p class="text-muted">
+                    Ми створюємо комфортні умови для всебічного розвитку особистості кожної дитини,
+                    використовуючи сучасні методики навчання та виховання.
+                </p>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a href="{% url 'main:page_detail' 'about' %}" class="btn btn-primary"><i class="bi bi-info-circle me-1"></i>Дізнатись більше</a>
+                    <a href="{% url 'gallery:gallery_list' %}" class="btn btn-outline-primary"><i class="bi bi-images me-1"></i>Фотогалерея</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Переваги -->
+<section class="features-section py-5" style="background:linear-gradient(180deg,#FBFCFE 0%, #EDF4FB 100%);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Чому обирають нас?</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-people"></i></div>
+                    <h5>Досвідчені педагоги</h5>
+                    <p class="text-muted mb-0">Команда професіоналів з багаторічним досвідом роботи з дітьми</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-book"></i></div>
+                    <h5>Сучасні програми</h5>
+                    <p class="text-muted mb-0">Використання новітніх методик навчання та розвитку</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-heart"></i></div>
+                    <h5>Індивідуальний підхід</h5>
+                    <p class="text-muted mb-0">Увага й турбота до кожної дитини в групі</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                    <h5>Безпека</h5>
+                    <p class="text-muted mb-0">Комфортні та безпечні умови перебування малечі</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Останні новини -->
+<section class="news-section py-5">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+            <div>
+                <h2 class="mb-1">Останні новини</h2>
+                <p class="text-muted mb-0">Слідкуйте за подіями нашого закладу</p>
+            </div>
+            <a href="{% url 'news:news_list' %}" class="btn btn-outline-primary"><i class="bi bi-newspaper me-1"></i>Всі новини</a>
+        </div>
+
+        <div class="row g-4">
+            {% for news in latest_news %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="overflow-hidden" style="height:200px;">
+                        {% if news.image %}
+                        <img src="{{ news.image.url }}" class="card-img-top w-100 h-100" alt="{{ news.title }}" style="object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'images/news-placeholder.svg' %}" class="card-img-top w-100 h-100" alt="{{ news.title }}" style="object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="text-muted small mb-2">
+                            <i class="bi bi-calendar"></i> {{ news.created_at|date:"d.m.Y" }}
+                        </div>
+                        <h5 class="card-title">{{ news.title }}</h5>
+                        <p class="card-text text-muted flex-grow-1">{{ news.content|striptags|truncatewords:18 }}</p>
+                        <a href="{% url 'news:news_detail' news.slug %}" class="btn btn-sm btn-primary align-self-start mt-2">Читати далі <i class="bi bi-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5 bg-white rounded shadow-sm">
+                    <i class="bi bi-newspaper fs-1 text-muted opacity-50"></i>
+                    <p class="text-muted mt-3 mb-0">Новин поки що немає. Завітайте трохи пізніше!</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Швидкі посилання -->
+<section class="quick-links-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="text-white fw-bold">Швидкий доступ</h2>
+            <p class="text-white-50 mb-0">Усе найголовніше в один клік</p>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-6 col-lg-3">
+                <a href="{% url 'gallery:gallery_list' %}">
+                    <i class="bi bi-images fs-1 mb-3 d-block"></i>
+                    <h5 class="text-white">Галерея</h5>
+                    <p class="mb-0 text-white-50">Перегляньте фотоальбоми</p>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <a href="{% url 'documents:documents_list' %}">
+                    <i class="bi bi-file-earmark-text fs-1 mb-3 d-block"></i>
+                    <h5 class="text-white">Документи</h5>
+                    <p class="mb-0 text-white-50">Нормативні документи</p>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <a href="{% url 'reviews:reviews_page' %}">
+                    <i class="bi bi-chat-heart fs-1 mb-3 d-block"></i>
+                    <h5 class="text-white">Відгуки</h5>
+                    <p class="mb-0 text-white-50">Думки наших батьків</p>
+                </a>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <a href="{% url 'main:contacts' %}">
+                    <i class="bi bi-geo-alt fs-1 mb-3 d-block"></i>
+                    <h5 class="text-white">Контакти</h5>
+                    <p class="mb-0 text-white-50">Зв'яжіться з нами</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

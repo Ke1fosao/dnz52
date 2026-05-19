@@ -1,0 +1,440 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Документи | ЗДО №52 Рівне{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+    }
+    .breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+
+    /* Фільтр категорій */
+    .category-filter {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 30px;
+    }
+    .filter-btn {
+        padding: 7px 18px;
+        border-radius: 20px;
+        border: 2px solid #dee2e6;
+        background: white;
+        color: #555;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .filter-btn:hover {
+        border-color: #4A90E2;
+        color: #4A90E2;
+    }
+    .filter-btn.active {
+        background: #4A90E2;
+        border-color: #4A90E2;
+        color: white;
+    }
+
+    /* Секція категорії */
+    .category-section {
+        margin-bottom: 40px;
+    }
+    .category-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e8f4fd;
+    }
+    .category-header h4 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2C3E50;
+    }
+    .category-count {
+        background: #e8f4fd;
+        color: #4A90E2;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 12px;
+    }
+
+    /* Рядок документа */
+    .doc-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 14px 18px;
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: box-shadow 0.2s, transform 0.2s;
+        border: 1px solid #f0f0f0;
+    }
+    .doc-row:hover {
+        box-shadow: 0 5px 20px rgba(74,144,226,0.12);
+        transform: translateX(3px);
+        border-color: #c8e0f8;
+    }
+
+    /* Іконка файлу */
+    .doc-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+    }
+    .doc-icon.pdf  { background: #fff0f0; color: #e53935; }
+    .doc-icon.doc  { background: #e8f0fe; color: #1a73e8; }
+    .doc-icon.docx { background: #e8f0fe; color: #1a73e8; }
+    .doc-icon.xls  { background: #e6f4ea; color: #1e8e3e; }
+    .doc-icon.xlsx { background: #e6f4ea; color: #1e8e3e; }
+    .doc-icon.ppt  { background: #fce8e6; color: #d93025; }
+    .doc-icon.pptx { background: #fce8e6; color: #d93025; }
+    .doc-icon.img  { background: #fef3c7; color: #f59e0b; }
+    .doc-icon.zip  { background: #f3e8ff; color: #7c3aed; }
+    .doc-icon.other{ background: #f0f0f0; color: #666; }
+
+    .doc-info { flex: 1; min-width: 0; }
+    .doc-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #2C3E50;
+        margin-bottom: 3px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .doc-meta {
+        font-size: 0.78rem;
+        color: #6c757d;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .doc-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+    .btn-download {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 16px;
+        background: #4A90E2;
+        color: white;
+        border-radius: 8px;
+        font-size: 0.83rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s, transform 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-download:hover {
+        background: #357ABD;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .no-docs { padding: 80px 0; }
+
+    /* Пошук */
+    .search-wrap {
+        position: relative;
+        max-width: 420px;
+    }
+    .search-wrap input {
+        padding-left: 40px;
+        border-radius: 20px;
+        border: 2px solid #dee2e6;
+        transition: border-color 0.2s;
+    }
+    .search-wrap input:focus {
+        border-color: #4A90E2;
+        box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+    }
+    .search-wrap .search-icon {
+        position: absolute;
+        left: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #aaa;
+        pointer-events: none;
+    }
+
+    /* Прихований рядок при фільтрі */
+    .doc-row.hidden { display: none; }
+    .category-section.hidden { display: none; }
+
+    @media (max-width: 576px) {
+        .doc-row { flex-wrap: wrap; }
+        .doc-title { white-space: normal; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Заголовок -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Документи</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-1">
+            <i class="bi bi-file-earmark-text me-2"></i>Документи
+        </h1>
+        <p class="text-white-50 mb-0">Нормативні документи, звіти та матеріали ЗДО №52</p>
+    </div>
+</section>
+
+<!-- Контент -->
+<section class="py-5">
+    <div class="container">
+
+        {% if documents %}
+
+        <!-- Пошук та фільтри -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+
+            <!-- Пошук -->
+            <div class="search-wrap">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="docSearch" class="form-control" placeholder="Пошук документа...">
+            </div>
+
+            <!-- Лічильник -->
+            <span class="text-muted" id="docCount" style="font-size:0.88rem;">
+                Всього: <strong>{{ documents|length }}</strong> документ{{ documents|length|pluralize:",,ів" }}
+            </span>
+        </div>
+
+        <!-- Фільтр по категоріях -->
+        {% if categories %}
+        <div class="category-filter">
+            <button class="filter-btn active" data-cat="all">
+                <i class="bi bi-grid me-1"></i>Всі
+            </button>
+            {% for category in categories %}
+            <button class="filter-btn" data-cat="{{ category.slug }}">
+                {{ category.name }}
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Документи по категоріях -->
+        {% if categories %}
+            {% for category in categories %}
+            {% with cat_docs=documents|dictsort:"title" %}
+            <div class="category-section" data-cat-section="{{ category.slug }}" id="section-{{ category.slug }}">
+                <div class="category-header">
+                    <i class="bi bi-folder-fill text-primary fs-5"></i>
+                    <h4>{{ category.name }}</h4>
+                    <span class="category-count" id="count-{{ category.slug }}">0</span>
+                </div>
+                <div id="docs-{{ category.slug }}">
+                    {% for doc in documents %}
+                    {% if doc.category and doc.category.slug == category.slug %}
+                    <div class="doc-row" data-cat="{{ category.slug }}" data-title="{{ doc.title|lower }}">
+                        <div class="doc-icon {{ doc.file.name|lower|slice:'-3:' }}">
+                            {% with ext=doc.file.name|lower %}
+                                {% if '.pdf' in ext %}<i class="bi bi-file-earmark-pdf"></i>
+                                {% elif '.doc' in ext %}<i class="bi bi-file-earmark-word"></i>
+                                {% elif '.xls' in ext %}<i class="bi bi-file-earmark-excel"></i>
+                                {% elif '.ppt' in ext %}<i class="bi bi-file-earmark-ppt"></i>
+                                {% elif '.jpg' in ext or '.png' in ext or '.jpeg' in ext %}<i class="bi bi-file-earmark-image"></i>
+                                {% elif '.zip' in ext or '.rar' in ext %}<i class="bi bi-file-earmark-zip"></i>
+                                {% else %}<i class="bi bi-file-earmark"></i>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="doc-info">
+                            <div class="doc-title">{{ doc.title }}</div>
+                            <div class="doc-meta">
+                                {% if doc.description %}
+                                <span class="d-none d-md-inline"><i class="bi bi-info-circle me-1"></i>{{ doc.description|truncatechars:60 }}</span>
+                                {% endif %}
+                                <span><i class="bi bi-calendar3 me-1"></i>{{ doc.created_at|date:"d.m.Y" }}</span>
+                                <span><i class="bi bi-download me-1"></i>{{ doc.downloads }}</span>
+                                <span><i class="bi bi-hdd me-1"></i>{{ doc.get_file_size }}</span>
+                            </div>
+                        </div>
+                        <div class="doc-actions">
+                            <a href="{% url 'documents:document_download' doc.pk %}"
+                               class="btn-download">
+                                <i class="bi bi-download"></i>
+                                <span class="d-none d-sm-inline">Завантажити</span>
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+
+            <!-- Документи без категорії -->
+            {% for doc in documents %}
+            {% if not doc.category %}
+            {% if forloop.first %}
+            <div class="category-section" data-cat-section="other" id="section-other">
+                <div class="category-header">
+                    <i class="bi bi-folder text-secondary fs-5"></i>
+                    <h4>Інше</h4>
+                </div>
+            {% endif %}
+                <div class="doc-row" data-cat="other" data-title="{{ doc.title|lower }}">
+                    <div class="doc-icon other"><i class="bi bi-file-earmark"></i></div>
+                    <div class="doc-info">
+                        <div class="doc-title">{{ doc.title }}</div>
+                        <div class="doc-meta">
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ doc.created_at|date:"d.m.Y" }}</span>
+                            <span><i class="bi bi-download me-1"></i>{{ doc.downloads }}</span>
+                            <span><i class="bi bi-hdd me-1"></i>{{ doc.get_file_size }}</span>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <a href="{% url 'documents:document_download' doc.pk %}" class="btn-download">
+                            <i class="bi bi-download"></i>
+                            <span class="d-none d-sm-inline">Завантажити</span>
+                        </a>
+                    </div>
+                </div>
+            {% if forloop.last %}</div>{% endif %}
+            {% endif %}
+            {% endfor %}
+
+        {% else %}
+            <!-- Без категорій — просто список -->
+            <div class="category-section">
+                {% for doc in documents %}
+                <div class="doc-row" data-cat="all" data-title="{{ doc.title|lower }}">
+                    <div class="doc-icon other">
+                        {% with ext=doc.file.name|lower %}
+                            {% if '.pdf' in ext %}<i class="bi bi-file-earmark-pdf"></i>
+                            {% elif '.doc' in ext %}<i class="bi bi-file-earmark-word"></i>
+                            {% elif '.xls' in ext %}<i class="bi bi-file-earmark-excel"></i>
+                            {% else %}<i class="bi bi-file-earmark"></i>{% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-title">{{ doc.title }}</div>
+                        <div class="doc-meta">
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ doc.created_at|date:"d.m.Y" }}</span>
+                            <span><i class="bi bi-download me-1"></i>{{ doc.downloads }}</span>
+                            <span><i class="bi bi-hdd me-1"></i>{{ doc.get_file_size }}</span>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <a href="{% url 'documents:document_download' doc.pk %}" class="btn-download">
+                            <i class="bi bi-download"></i>
+                            <span class="d-none d-sm-inline">Завантажити</span>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% else %}
+        <div class="text-center no-docs">
+            <i class="bi bi-file-earmark-text fs-1 text-muted d-block mb-3"></i>
+            <h4 class="text-muted">Документи ще не додані</h4>
+            <p class="text-muted">Незабаром тут з'являться нормативні матеріали</p>
+        </div>
+        {% endif %}
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ── Підрахунок документів у кожній категорії ──
+    document.querySelectorAll('[data-cat-section]').forEach(section => {
+        const slug = section.dataset.catSection;
+        const rows = section.querySelectorAll('.doc-row');
+        const counter = document.getElementById('count-' + slug);
+        if (counter) counter.textContent = rows.length;
+        // Сховати порожні секції
+        if (rows.length === 0) section.style.display = 'none';
+    });
+
+    // ── Фільтр по категоріях ──
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+
+            const cat = this.dataset.cat;
+            document.querySelectorAll('.category-section').forEach(section => {
+                if (cat === 'all') {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.toggle('hidden', section.dataset.catSection !== cat);
+                }
+            });
+
+            // Скинути пошук
+            document.getElementById('docSearch').value = '';
+            document.querySelectorAll('.doc-row').forEach(r => r.classList.remove('hidden'));
+        });
+    });
+
+    // ── Пошук ──
+    document.getElementById('docSearch').addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+
+        // Знімити фільтр категорії при пошуку
+        if (query) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.category-section').forEach(s => s.classList.remove('hidden'));
+        }
+
+        let visible = 0;
+        document.querySelectorAll('.doc-row').forEach(row => {
+            const title = row.dataset.title || '';
+            const show = !query || title.includes(query);
+            row.classList.toggle('hidden', !show);
+            if (show) visible++;
+        });
+
+        // Сховати порожні секції після пошуку
+        document.querySelectorAll('.category-section').forEach(section => {
+            const hasVisible = section.querySelectorAll('.doc-row:not(.hidden)').length > 0;
+            section.classList.toggle('hidden', !hasVisible);
+        });
+
+        document.getElementById('docCount').innerHTML =
+            'Знайдено: <strong>' + visible + '</strong>';
+    });
+
+});
+</script>
+{% endblock %}

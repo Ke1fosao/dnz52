@@ -15,7 +15,6 @@ class ReviewAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at']
     ordering = ['-created_at']
     list_per_page = 25
-    date_hierarchy = 'created_at'
 
     fieldsets = (
         ('Інформація про автора', {

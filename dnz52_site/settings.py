@@ -8,6 +8,19 @@ Django settings for dnz52_site project.
 import os
 from pathlib import Path
 
+from whitenoise.storage import CompressedManifestStaticFilesStorage
+
+
+class ResilientStaticFilesStorage(CompressedManifestStaticFilesStorage):
+    """
+    Те саме, що й WhiteNoise CompressedManifestStaticFilesStorage,
+    але не падає з 500-ю помилкою якщо у маніфесті немає якогось файлу.
+    Натомість віддає звичайний (не хешований) URL.
+    Це робить деплой стійким до того, що хтось забув запустити collectstatic.
+    """
+    manifest_strict = False
+
+
 # Завантаження змінних з .env (якщо файл існує)
 try:
     from dotenv import load_dotenv
@@ -169,13 +182,15 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise — стиснення + кешування
+# WhiteNoise — стиснення + кешування.
+# Використовуємо ResilientStaticFilesStorage (визначений вище), щоб сайт
+# не падав з 500-ю, якщо у маніфесті немає файлу — поверне URL без хешу.
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': 'dnz52_site.settings.ResilientStaticFilesStorage',
     },
 }
 

@@ -512,8 +512,16 @@
 
     @media (max-width: 767px) {
         .specialist-header { flex-direction: column; }
-        .specialist-photo-col { width: 100%; }
-        .specialist-photo-col img { min-height: 250px; max-height: 300px; }
+        .specialist-photo-col { width: 100%; background: #f0f4f9; }
+        .specialist-photo-col img {
+            width: 100%;
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            object-fit: contain;
+            object-position: center;
+        }
+        .specialist-photo-placeholder { min-height: 220px; }
         .specialist-info-col { padding: 22px; }
         .info-grid { grid-template-columns: 1fr; }
         .specialist-name { font-size: 1.3rem; }

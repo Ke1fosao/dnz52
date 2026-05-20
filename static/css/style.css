@@ -630,7 +630,7 @@ img {
 }
 
 /* ---------- Адаптивність ---------- */
-@media (max-width: 991px) {
+@media (max-width: 991.98px) {
     .nav-link {
         padding: 0.55rem 0 !important;
     }
@@ -638,6 +638,15 @@ img {
         box-shadow: none;
         border: 1px solid var(--border-color);
         margin-left: 0.5rem !important;
+    }
+    /* Дозволяємо прокручувати вміст мобільного меню,
+       коли воно довше за висоту екрану (наприклад, список груп). */
+    .main-navbar .navbar-collapse {
+        max-height: calc(100vh - 70px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 0.75rem;
     }
 }
 

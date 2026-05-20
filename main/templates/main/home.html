@@ -144,10 +144,22 @@
         box-shadow: 0 4px 10px rgba(74,144,226,0.25);
     }
 
+    /* Слайдер: адаптивна висота, щоб не займав весь екран на телефоні */
+    .hero-slider .carousel-item .slide-img {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        display: block;
+    }
+    @media (max-width: 991px) {
+        .hero-slider .carousel-item .slide-img { height: 380px; }
+    }
     @media (max-width: 576px) {
         .home-search-form .input-group { flex-wrap: wrap; border-radius: 18px; }
         .home-search-form input { flex: 1 1 auto; min-width: 0; }
         .home-search-form .btn { width: 100%; border-radius: 0 0 16px 16px; padding: 12px; }
+        .hero-slider .carousel-item .slide-img { height: 280px; }
+        .carousel-caption { padding: 1rem 1rem !important; }
     }
 </style>
 {% endblock %}
@@ -167,7 +179,7 @@
         <div class="carousel-inner">
             {% for slider in sliders %}
             <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                <img src="{{ slider.image.url }}" class="d-block w-100" alt="{{ slider.title }}" style="height: 500px; object-fit: cover;">
+                <img src="{{ slider.image.url }}" class="d-block w-100 slide-img" alt="{{ slider.title }}">
                 <div class="carousel-caption">
                     <div class="container">
                         <h1 class="display-4 fw-bold">{{ slider.title }}</h1>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4A90E2"/>
+      <stop offset="100%" stop-color="#50E3C2"/>
+    </linearGradient>
+    <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e8f4fd"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Фон -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Декоративні кола -->
+  <circle cx="1050" cy="120" r="180" fill="rgba(255,255,255,0.10)"/>
+  <circle cx="150" cy="540" r="220" fill="rgba(255,255,255,0.08)"/>
+  <circle cx="980" cy="500" r="120" fill="rgba(255,255,255,0.06)"/>
+
+  <!-- Логотип-будинок (зліва) -->
+  <g transform="translate(120, 220)">
+    <rect x="0" y="0" width="180" height="180" rx="40" fill="url(#logoGrad)"/>
+    <path d="M90 40 L150 75 V140 H115 V108 H65 V140 H30 V75 Z" fill="#4A90E2"/>
+    <circle cx="90" cy="124" r="9" fill="#FFD93D"/>
+  </g>
+
+  <!-- Текст -->
+  <text x="350" y="280" font-family="'Segoe UI', system-ui, sans-serif" font-size="92" font-weight="800" fill="#ffffff">ЗДО №52</text>
+  <text x="350" y="350" font-family="'Segoe UI', system-ui, sans-serif" font-size="40" font-weight="500" fill="rgba(255,255,255,0.92)">м. Рівне</text>
+  <text x="350" y="430" font-family="'Segoe UI', system-ui, sans-serif" font-size="32" font-weight="400" fill="rgba(255,255,255,0.78)">Затишний дім, де ваша дитина</text>
+  <text x="350" y="475" font-family="'Segoe UI', system-ui, sans-serif" font-size="32" font-weight="400" fill="rgba(255,255,255,0.78)">росте, навчається і пізнає світ</text>
+</svg>

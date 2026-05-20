@@ -151,10 +151,36 @@
         transition: transform 0.3s, box-shadow 0.3s;
         background: #f5f7fb;
         aspect-ratio: 3 / 4;
+        cursor: zoom-in;
     }
     .photo-tile:hover {
         transform: translateY(-4px) scale(1.02);
         box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+    }
+    .photo-tile::after {
+        content: "\F4A1"; /* bi-zoom-in */
+        font-family: "bootstrap-icons";
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.45);
+        color: #fff;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.7);
+        transition: opacity 0.25s, transform 0.25s;
+        pointer-events: none;
+    }
+    .photo-tile:hover::after,
+    .photo-tile:focus-within::after {
+        opacity: 1;
+        transform: scale(1);
     }
     .photo-tile img {
         width: 100%;
@@ -498,12 +524,15 @@
             <div class="row g-3 mb-4">
                 {% for photo in photos %}
                 <div class="col-6 col-md-4 col-lg-2">
-                    <div class="photo-tile">
+                    <button type="button" class="photo-tile p-0 border-0"
+                            data-lightbox="sample"
+                            data-src="{{ photo.image.url }}"
+                            aria-label="Збільшити фото{% if photo.title %} — {{ photo.title }}{% endif %}">
                         <img src="{{ photo.image.url }}" alt="{{ photo.title|default:'Поради' }}" loading="lazy">
                         {% if photo.title %}
                         <div class="photo-caption">{{ photo.title }}</div>
                         {% endif %}
-                    </div>
+                    </button>
                 </div>
                 {% empty %}
                 {# Якщо фото ще не додані — показуємо плейсхолдери з підказкою #}
@@ -607,14 +636,15 @@
     </div>
 </section>
 
-<!-- Lightbox для перегляду зразка -->
+{% endif %}
+
+<!-- Lightbox для перегляду зразка заяви та фото порад -->
 <div class="sample-lightbox" id="sampleLightbox" role="dialog" aria-hidden="true">
     <button type="button" class="lb-close" aria-label="Закрити">
         <i class="bi bi-x-lg"></i>
     </button>
     <img src="" alt="" id="sampleLightboxImg">
 </div>
-{% endif %}
 
 {% endblock %}
 
@@ -641,16 +671,24 @@
         }
     }
 
-    /* Lightbox для зразка заяви */
+    /* Lightbox для зразка заяви та фото порад */
     var lightbox = document.getElementById('sampleLightbox');
     var lightboxImg = document.getElementById('sampleLightboxImg');
     if (lightbox && lightboxImg) {
         var closeBtn = lightbox.querySelector('.lb-close');
 
-        document.querySelectorAll('[data-lightbox="sample"]').forEach(function (img) {
-            img.addEventListener('click', function () {
-                lightboxImg.src = this.src;
-                lightboxImg.alt = this.alt || '';
+        document.querySelectorAll('[data-lightbox="sample"]').forEach(function (el) {
+            el.addEventListener('click', function () {
+                // Беремо джерело фото або з самого <img>, або з data-src на обгортці
+                var src = this.getAttribute('data-src')
+                    || (this.tagName === 'IMG' ? this.src : '')
+                    || (this.querySelector('img') && this.querySelector('img').src) || '';
+                var alt = this.getAttribute('alt')
+                    || this.getAttribute('aria-label')
+                    || (this.querySelector('img') && this.querySelector('img').alt) || '';
+                if (!src) return;
+                lightboxImg.src = src;
+                lightboxImg.alt = alt;
                 lightbox.classList.add('open');
                 lightbox.setAttribute('aria-hidden', 'false');
                 document.body.style.overflow = 'hidden';

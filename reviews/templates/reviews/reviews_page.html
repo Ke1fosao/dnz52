@@ -308,17 +308,32 @@
                         <span style="font-size:0.9rem;">Він з'явиться після перевірки адміністратором.</span>
                     </div>
                     {% else %}
+                    {% if cooldown_blocked %}
+                    <div class="alert alert-warning d-flex align-items-start gap-3 mb-3" role="alert">
+                        <i class="bi bi-clock-history fs-4"></i>
+                        <div>
+                            <strong>Зачекайте трохи.</strong>
+                            Між відгуками має пройти не менше {{ cooldown_seconds }} секунд — це захист від випадкового повторного надсилання.
+                        </div>
+                    </div>
+                    {% endif %}
                     <h4 class="mb-4"><i class="bi bi-pencil-square me-2 text-primary"></i>Залишити відгук</h4>
                     <form method="post" novalidate>
                         {% csrf_token %}
+                        {# Honeypot — це поле приховане для людей через CSS aria-hidden + tabindex="-1". #}
+                        {# Боти його зазвичай заповнюють — і ми тоді тихо ігноруємо запит. #}
+                        <div aria-hidden="true" style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;">
+                            <label for="website-field">Не заповнюйте це поле</label>
+                            <input type="text" name="website" id="website-field" tabindex="-1" autocomplete="off">
+                        </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Ваше ім'я *</label>
-                                <input type="text" name="author" class="form-control" placeholder="Марія Петренко" required>
+                                <label class="form-label fw-semibold" for="review-author">Ваше ім'я *</label>
+                                <input type="text" name="author" id="review-author" class="form-control" placeholder="Марія Петренко" maxlength="100" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Група дитини</label>
-                                <input type="text" name="child_group" class="form-control" placeholder="Наприклад: Сонечко">
+                                <label class="form-label fw-semibold" for="review-group">Група дитини</label>
+                                <input type="text" name="child_group" id="review-group" class="form-control" placeholder="Наприклад: Сонечко" maxlength="100">
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Оцінка *</label><br>
@@ -331,8 +346,8 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-semibold">Ваш відгук *</label>
-                                <textarea name="text" class="form-control" rows="4" placeholder="Поділіться враженнями..." required></textarea>
+                                <label class="form-label fw-semibold" for="review-text">Ваш відгук *</label>
+                                <textarea name="text" id="review-text" class="form-control" rows="4" placeholder="Поділіться враженнями..." maxlength="5000" required></textarea>
                             </div>
                             <div class="col-12">
                                 <button type="submit" class="btn btn-primary px-4">

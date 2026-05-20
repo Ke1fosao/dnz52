@@ -29,6 +29,9 @@ class PageSitemap(Sitemap):
     def lastmod(self, obj):
         return obj.updated_at
 
+    def location(self, obj):
+        return f'/page/{obj.slug}/'
+
 
 class NewsSitemap(Sitemap):
     changefreq = 'weekly'

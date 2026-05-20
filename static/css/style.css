@@ -682,6 +682,18 @@ img {
     .site-footer .social-links { justify-content: center; }
 }
 
+/* ---------- Accessibility: користувачі з вестибулярними розладами ---------- */
+/* Якщо у системі стоїть «Reduce motion» — вимикаємо складні анімації. */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
 /* ---------- Допоміжні утиліти ---------- */
 .text-gradient {
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));

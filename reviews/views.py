@@ -1,3 +1,4 @@
+import time
 from django.shortcuts import render
 from django.db.models import Avg
 from .models import Review
@@ -10,19 +11,43 @@ SORT_ORDERS = {
     'lowest':  ('rating', '-created_at'),
 }
 
+# Мінімальний інтервал між відгуками з однієї сесії (захист від спаму)
+REVIEW_COOLDOWN_SECONDS = 60
+
 
 def reviews_page(request):
     """Сторінка відгуків з фільтрацією за оцінкою та сортуванням."""
     base_qs = Review.objects.filter(is_approved=True)
     submitted = False
+    spam_blocked = False
+    cooldown_blocked = False
 
     if request.method == 'POST':
-        author      = request.POST.get('author', '').strip()
-        child_group = request.POST.get('child_group', '').strip()
-        rating      = int(request.POST.get('rating', 5) or 5)
-        text        = request.POST.get('text', '').strip()
+        # === ЗАХИСТ №1: HONEYPOT ===
+        # Приховане поле "website" не бачить людина (display:none у формі),
+        # але бот, який автоматично заповнює всі поля — заповнить.
+        # Якщо поле не порожнє — це бот, тихо «приймаємо» але нічого не зберігаємо.
+        honeypot = request.POST.get('website', '').strip()
+        if honeypot:
+            spam_blocked = True
 
-        if author and text:
+        # === ЗАХИСТ №2: RATE-LIMIT ===
+        # Не дозволяємо лишати > 1 відгук за 60 сек з однієї сесії.
+        last_ts = request.session.get('last_review_ts', 0)
+        now_ts = int(time.time())
+        if not spam_blocked and now_ts - last_ts < REVIEW_COOLDOWN_SECONDS:
+            cooldown_blocked = True
+
+        author      = request.POST.get('author', '').strip()[:100]
+        child_group = request.POST.get('child_group', '').strip()[:100]
+        try:
+            rating = int(request.POST.get('rating', 5) or 5)
+        except (TypeError, ValueError):
+            rating = 5
+        rating = max(1, min(5, rating))  # обмежуємо діапазон 1..5
+        text = request.POST.get('text', '').strip()[:5000]
+
+        if author and text and not spam_blocked and not cooldown_blocked:
             Review.objects.create(
                 author=author,
                 child_group=child_group,
@@ -30,6 +55,10 @@ def reviews_page(request):
                 text=text,
                 is_approved=False,
             )
+            request.session['last_review_ts'] = now_ts
+            submitted = True
+        elif spam_blocked:
+            # Удаємо для бота, що все добре, але нічого не зберегли
             submitted = True
 
     # Статистика — рахуємо на всіх схвалених відгуках, перед фільтрацією
@@ -61,6 +90,8 @@ def reviews_page(request):
         'reviews':        qs,
         'stats':          stats,
         'submitted':      submitted,
+        'cooldown_blocked': cooldown_blocked,
+        'cooldown_seconds': REVIEW_COOLDOWN_SECONDS,
         'filter_stars':   star_filter,
         'sort':           sort,
         'filtered_count': qs.count(),

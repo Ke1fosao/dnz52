@@ -62,6 +62,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Sitemap для SEO
+    'django.contrib.sitemaps',
+
     # Сторонні
     'ckeditor',
     'ckeditor_uploader',
@@ -101,7 +104,8 @@ ROOT_URLCONF = 'dnz52_site.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Папка templates/ на рівні проекту — для 404.html, 500.html, robots.txt
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -220,3 +224,12 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+
+    # HSTS — браузер запам'ятає, що до сайту тільки HTTPS (захист від downgrade)
+    # 31536000 = 1 рік. Це безпечно для проду; на dev/staging — не вмикайте.
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
+    # Не відправляти Referer на сторонні сайти (приватність відвідувачів)
+    SECURE_REFERRER_POLICY = 'same-origin'

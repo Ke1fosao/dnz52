@@ -536,17 +536,6 @@
                         </div>
                         {% endif %}
 
-                        {% if member.phone or member.email %}
-                        <div class="staff-card-contacts">
-                            {% if member.phone %}
-                            <a href="tel:{{ member.phone|cut:' '|cut:'-' }}"><i class="bi bi-telephone-fill"></i></a>
-                            {% endif %}
-                            {% if member.email %}
-                            <a href="mailto:{{ member.email }}"><i class="bi bi-envelope-fill"></i></a>
-                            {% endif %}
-                        </div>
-                        {% endif %}
-
                         {% if member.detail_url %}
                         <a href="{{ member.detail_url }}" class="staff-detail-btn">
                             <i class="bi bi-person-vcard-fill"></i>

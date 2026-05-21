@@ -2,24 +2,99 @@
 {% load static %}
 
 {% block title %}Гурткова робота | ЗДО №52 Рівне{% endblock %}
+{% block meta_description %}Гуртки та секції ЗДО №52 у Рівному — мистецтво, спорт, інтелектуальний розвиток. Розвиваємо таланти кожної дитини.{% endblock %}
 
 {% block extra_css %}
 <style>
+/* === Hero === */
 .page-hero {
     background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-    padding: 60px 0 40px;
+    padding: 70px 0 130px;
+    position: relative;
+    overflow: hidden;
 }
-.breadcrumb-item a { color: rgba(255,255,255,0.8); text-decoration: none; }
+.page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 85% 25%, rgba(255,255,255,0.18), transparent 50%),
+        radial-gradient(circle at 10% 90%, rgba(80,227,194,0.20), transparent 50%);
+}
+.page-hero .container { position: relative; z-index: 1; }
+.breadcrumb-item a { color: rgba(255,255,255,0.85); text-decoration: none; }
 .breadcrumb-item.active { color: white; }
 .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+.hero-lead {
+    color: rgba(255,255,255,0.92);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 720px;
+}
 
-/* Картки документів */
+/* === Stats banner (накладаємо на hero) === */
+.stats-banner-wrap {
+    margin-top: -90px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 3rem;
+}
+.stats-banner {
+    background: #fff;
+    border-radius: 22px;
+    padding: 1.8rem 1.5rem;
+    box-shadow: 0 16px 50px rgba(74,144,226,0.20);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.2rem;
+}
+.stat-tile {
+    text-align: center;
+    padding: 0.6rem 0.8rem;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #F8FAFD, #EDF4FB);
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+.stat-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(74,144,226,0.18);
+}
+.stat-tile .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    margin: 0 auto 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.3rem;
+}
+.stat-tile .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2C3E50;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+.stat-tile .stat-label {
+    font-size: 0.84rem;
+    color: #6C7A89;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+.stat-tile.s1 .stat-icon { background: linear-gradient(135deg, #4A90E2, #357ABD); }
+.stat-tile.s2 .stat-icon { background: linear-gradient(135deg, #FFB84D, #FF9F1A); }
+.stat-tile.s3 .stat-icon { background: linear-gradient(135deg, #50E3C2, #34C8A8); }
+.stat-tile.s4 .stat-icon { background: linear-gradient(135deg, #B388FF, #7C4DCB); }
+
+/* === Документи з організації === */
 .doc-link-card {
     display: flex;
     align-items: center;
     gap: 14px;
-    background: white;
-    border-radius: 12px;
+    background: #fff;
+    border-radius: 14px;
     padding: 14px 18px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.07);
     text-decoration: none;
@@ -43,105 +118,266 @@
     font-size: 1.3rem;
     flex-shrink: 0;
 }
-.doc-link-card .doc-name {
-    font-weight: 600;
-    font-size: 0.92rem;
-    line-height: 1.4;
-}
-.doc-link-card .doc-meta {
-    font-size: 0.78rem;
-    color: #aaa;
-    margin-top: 2px;
-}
+.doc-link-card .doc-name { font-weight: 600; font-size: 0.92rem; line-height: 1.4; }
+.doc-link-card .doc-meta { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
 
-/* Секція заголовку */
+/* === Section title (single, like a real chapter heading) === */
 .section-title {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1.4rem;
+    font-weight: 800;
     color: #2C3E50;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
     border-bottom: 3px solid #4A90E2;
     display: inline-block;
-    margin-bottom: 22px;
+    margin-bottom: 1.8rem;
 }
 
-/* Картки гуртків */
+/* === Картка гуртка — нова, з декоративними елементами === */
 .circle-card {
-    background: white;
-    border-radius: 18px;
+    background: #fff;
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    margin-bottom: 30px;
-    border-top: 5px solid var(--c-color, #4A90E2);
+    box-shadow: 0 6px 30px rgba(44,62,80,0.08);
+    margin-bottom: 2.2rem;
+    position: relative;
+    border-top: 6px solid var(--c-color, #4A90E2);
+    transition: transform 0.3s, box-shadow 0.3s;
 }
+.circle-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(44,62,80,0.15);
+}
+/* Кольорова «бульбашка» позаду номера */
+.circle-card::before {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -50px;
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, var(--c-color, #4A90E2) 0%, transparent 65%);
+    opacity: 0.10;
+    pointer-events: none;
+    z-index: 0;
+}
+/* Великий watermark-номер */
+.circle-number {
+    position: absolute;
+    top: 12px;
+    right: 24px;
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--c-color, #4A90E2);
+    opacity: 0.13;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    pointer-events: none;
+    z-index: 1;
+    font-family: 'Montserrat', sans-serif;
+}
+
 .circle-header {
-    padding: 24px 28px 20px;
+    padding: 26px 30px 18px;
     display: flex;
     align-items: flex-start;
-    gap: 18px;
-    border-bottom: 1px solid #f0f0f0;
+    gap: 20px;
+    position: relative;
+    z-index: 2;
 }
 .circle-icon-box {
-    width: 60px; height: 60px;
-    border-radius: 14px;
+    width: 64px; height: 64px;
+    border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.7rem;
+    font-size: 1.85rem;
     flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.10);
 }
-.circle-title { font-size: 1.2rem; font-weight: 700; color: #2C3E50; margin-bottom: 4px; }
-.circle-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.circle-meta-block { flex-grow: 1; min-width: 0; padding-right: 60px; }
+.circle-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #2C3E50;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+.circle-leader {
+    font-size: 0.92rem;
+    color: #5C6B7A;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+.circle-leader i { color: var(--c-color, #4A90E2); }
+.circle-badges { display: flex; flex-wrap: wrap; gap: 7px; }
 .circle-badge {
-    font-size: 0.75rem;
-    padding: 3px 10px;
-    border-radius: 12px;
-    font-weight: 500;
+    font-size: 0.78rem;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
-.circle-body { padding: 24px 28px; }
-.circle-body-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.circle-badge.age {
+    background: var(--c-bg, #e8f4fd);
+    color: var(--c-color, #4A90E2);
+}
+.circle-badge.schedule {
+    background: #F0F4F9;
+    color: #6C7A89;
+}
+
+/* Quote / тіз-перепустка перед метою/описом */
+.circle-quote {
+    margin: 0 30px 18px;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+    border-left: 4px solid var(--c-color, #4A90E2);
+    border-radius: 0 12px 12px 0;
+    font-style: italic;
+    font-size: 0.96rem;
+    color: #3A4654;
+    line-height: 1.55;
+    position: relative;
+    z-index: 2;
+}
+.circle-quote::before {
+    content: "“";
+    font-size: 2.2rem;
+    font-family: Georgia, serif;
+    color: var(--c-color, #4A90E2);
+    line-height: 0;
+    margin-right: 6px;
+    vertical-align: -0.4em;
+    opacity: 0.55;
+}
+
+.circle-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #E5ECF4 30%, #E5ECF4 70%, transparent);
+    margin: 0 30px;
+}
+
+.circle-body { padding: 22px 30px 28px; position: relative; z-index: 2; }
+.circle-body-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
 
 .circle-section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
+    font-size: 0.74rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #aaa;
-    margin-bottom: 8px;
+    letter-spacing: 0.7px;
+    color: var(--c-color, #4A90E2);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 .circle-text {
-    font-size: 0.92rem;
+    font-size: 0.94rem;
     line-height: 1.7;
-    color: #444;
+    color: #3A4654;
 }
 .circle-text ul { padding-left: 18px; margin: 0; }
-.circle-text li { margin-bottom: 4px; }
+.circle-text li { margin-bottom: 5px; }
 
 .circle-album-link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 18px;
-    padding: 9px 20px;
-    border-radius: 25px;
+    gap: 10px;
+    margin-top: 22px;
+    padding: 11px 24px;
+    border-radius: 28px;
     text-decoration: none;
-    font-size: 0.88rem;
-    font-weight: 600;
+    font-size: 0.92rem;
+    font-weight: 700;
     color: white;
-    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
-.circle-album-link:hover { opacity: 0.85; color: white; transform: translateY(-2px); }
+.circle-album-link:hover {
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.20);
+}
+.circle-album-link i { font-size: 1.05rem; }
 
-/* Сайдбар */
+/* === CTA-банер унизу === */
+.cta-banner {
+    background: linear-gradient(135deg, #FFF9E5 0%, #FFEAB3 100%);
+    border-radius: 22px;
+    padding: 2.3rem 2.5rem;
+    border-left: 6px solid #FFB84D;
+    margin-top: 1.5rem;
+    box-shadow: 0 6px 22px rgba(255,184,77,0.18);
+    display: flex;
+    align-items: center;
+    gap: 1.8rem;
+    flex-wrap: wrap;
+}
+.cta-banner .cta-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #FFB84D, #FF9F1A);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(255,184,77,0.35);
+}
+.cta-banner .cta-text {
+    flex-grow: 1;
+    min-width: 240px;
+}
+.cta-banner h3 {
+    color: #7B5500;
+    font-weight: 800;
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+}
+.cta-banner p {
+    margin: 0;
+    color: #5C3F00;
+    line-height: 1.55;
+    font-size: 0.97rem;
+}
+.cta-banner .cta-action {
+    background: linear-gradient(135deg, #4A90E2, #357ABD);
+    color: #fff;
+    padding: 12px 26px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 6px 18px rgba(74,144,226,0.30);
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex-shrink: 0;
+}
+.cta-banner .cta-action:hover {
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(74,144,226,0.45);
+}
+
+/* === Сайдбар === */
 .sidebar-widget {
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
-    margin-bottom: 24px;
+    box-shadow: 0 4px 18px rgba(44,62,80,0.08);
+    margin-bottom: 1.5rem;
 }
 .widget-header {
     background: linear-gradient(135deg, #4A90E2, #357ABD);
     color: white;
     padding: 14px 20px;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.95rem;
 }
 .sidebar-link {
@@ -150,20 +386,31 @@
     border-bottom: 1px solid #f0f0f0;
     text-decoration: none;
     color: #333;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     transition: background 0.2s;
 }
 .sidebar-link:last-child { border-bottom: none; }
 .sidebar-link:hover { background: #f0f7ff; color: #4A90E2; }
+.sidebar-link.active { background: #f0f7ff; color: #4A90E2; font-weight: 700; }
 
+@media (max-width: 991px) {
+    .page-hero { padding: 60px 0 110px; }
+    .stats-banner-wrap { margin-top: -75px; }
+}
 @media (max-width: 767px) {
-    .circle-body-cols { grid-template-columns: 1fr; }
-    .circle-header { flex-direction: column; gap: 12px; }
+    .circle-body-cols { grid-template-columns: 1fr; gap: 18px; }
+    .circle-header { flex-direction: column; gap: 14px; padding-right: 22px; }
+    .circle-meta-block { padding-right: 0; }
+    .circle-number { font-size: 3.5rem; right: 18px; top: 8px; }
+    .cta-banner { flex-direction: column; text-align: center; }
+    .cta-banner .cta-icon { margin: 0 auto; }
 }
 </style>
 {% endblock %}
 
 {% block content %}
+
+<!-- ═══ Hero ═══ -->
 <section class="page-hero">
     <div class="container">
         <nav aria-label="breadcrumb">
@@ -172,22 +419,51 @@
                 <li class="breadcrumb-item active">Гурткова робота</li>
             </ol>
         </nav>
-        <h1 class="text-white fw-bold mb-1"><i class="bi bi-stars me-2"></i>Гурткова робота</h1>
-        <p class="text-white-50 mb-0">Гуртки та секції ЗДО №52 — розвиток талантів кожної дитини</p>
+        <h1 class="text-white fw-bold mb-3"><i class="bi bi-stars me-2"></i>Гурткова робота</h1>
+        <p class="hero-lead mb-0">
+            У ЗДО №52 діє система гурткової роботи, що допомагає кожній дитині розкрити свій
+            талант: від художньої творчості і спорту — до інтелектуального розвитку та логіки.
+        </p>
     </div>
 </section>
 
-<section class="py-5">
+<!-- ═══ Stats-банер (накладається на hero) ═══ -->
+<div class="container stats-banner-wrap">
+    <div class="stats-banner">
+        <div class="stat-tile s1">
+            <div class="stat-icon"><i class="bi bi-stars"></i></div>
+            <div class="stat-num">{{ circles|length }}</div>
+            <div class="stat-label">активних гуртків</div>
+        </div>
+        <div class="stat-tile s2">
+            <div class="stat-icon"><i class="bi bi-palette-fill"></i></div>
+            <div class="stat-num">6+</div>
+            <div class="stat-label">творчих напрямків</div>
+        </div>
+        <div class="stat-tile s3">
+            <div class="stat-icon"><i class="bi bi-emoji-smile-fill"></i></div>
+            <div class="stat-num">200+</div>
+            <div class="stat-label">залучених дітей</div>
+        </div>
+        <div class="stat-tile s4">
+            <div class="stat-icon"><i class="bi bi-award-fill"></i></div>
+            <div class="stat-num">15+</div>
+            <div class="stat-label">років практики</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ Основний контент ═══ -->
+<section class="pb-5">
     <div class="container">
         <div class="row g-4">
 
-            <!-- Основний контент -->
+            <!-- Ліва колонка: гуртки + документи -->
             <div class="col-lg-8">
 
-                <!-- Документи -->
                 {% if doc_links %}
                 <div class="mb-5">
-                    <h2 class="section-title"><i class="bi bi-file-earmark-text me-2 text-primary"></i>Документи з організації гурткової роботи</h2>
+                    <h2 class="section-title"><i class="bi bi-file-earmark-text me-2 text-primary"></i>Документи з організації</h2>
                     {% for doc_link in doc_links %}
                     <a href="{% url 'documents:document_download' doc_link.document.pk %}" class="doc-link-card">
                         <div class="doc-icon">
@@ -208,47 +484,50 @@
                 </div>
                 {% endif %}
 
-                <!-- Гуртки -->
                 {% if circles %}
                 <h2 class="section-title"><i class="bi bi-collection me-2 text-primary"></i>Наші гуртки</h2>
 
                 {% for circle in circles %}
-                <div class="circle-card" style="--c-color: {{ circle.color }};">
+                <article class="circle-card" style="--c-color: {{ circle.color }}; --c-bg: {{ circle.color }}1a;">
+                    <span class="circle-number" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+
                     <div class="circle-header">
-                        <div class="circle-icon-box" style="background: {{ circle.color }}22; color: {{ circle.color }};">
+                        <div class="circle-icon-box" style="background: linear-gradient(135deg, {{ circle.color }}, {{ circle.color }}cc); color: #fff;">
                             <i class="bi {{ circle.icon }}"></i>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="circle-title">{{ circle.name }}</div>
-                            <div style="font-size:0.85rem; color:#6c757d;">
-                                <i class="bi bi-person me-1"></i>{{ circle.leader }}
+                        <div class="circle-meta-block">
+                            <h3 class="circle-title">{{ circle.name }}</h3>
+                            <div class="circle-leader">
+                                <i class="bi bi-person-circle"></i>{{ circle.leader }}
                             </div>
                             <div class="circle-badges">
                                 {% if circle.age_group %}
-                                <span class="circle-badge" style="background: {{ circle.color }}18; color: {{ circle.color }};">
-                                    <i class="bi bi-people me-1"></i>{{ circle.age_group }}
+                                <span class="circle-badge age">
+                                    <i class="bi bi-people"></i>{{ circle.age_group }}
                                 </span>
                                 {% endif %}
                                 {% if circle.schedule %}
-                                <span class="circle-badge bg-light text-muted">
-                                    <i class="bi bi-clock me-1"></i>{{ circle.schedule }}
+                                <span class="circle-badge schedule">
+                                    <i class="bi bi-clock"></i>{{ circle.schedule }}
                                 </span>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
 
+                    <hr class="circle-divider">
+
                     <div class="circle-body">
                         <div class="circle-body-cols">
                             {% if circle.goal %}
                             <div>
-                                <div class="circle-section-label"><i class="bi bi-bullseye me-1"></i>Мета та завдання</div>
+                                <div class="circle-section-label"><i class="bi bi-bullseye"></i>Мета та завдання</div>
                                 <div class="circle-text">{{ circle.goal|safe }}</div>
                             </div>
                             {% endif %}
                             {% if circle.description %}
                             <div>
-                                <div class="circle-section-label"><i class="bi bi-card-text me-1"></i>Опис діяльності</div>
+                                <div class="circle-section-label"><i class="bi bi-card-text"></i>Опис діяльності</div>
                                 <div class="circle-text">{{ circle.description|safe }}</div>
                             </div>
                             {% endif %}
@@ -256,17 +535,35 @@
 
                         {% if circle.album %}
                         <a href="{% url 'gallery:album_detail' circle.album.slug %}"
-                           class="circle-album-link" style="background: {{ circle.color }};">
-                            <i class="bi bi-images"></i> Фотоальбом гуртка
-                            <span class="opacity-75 small">({{ circle.album.photos.count }} фото)</span>
+                           class="circle-album-link"
+                           style="background: linear-gradient(135deg, {{ circle.color }}, {{ circle.color }}cc);">
+                            <i class="bi bi-images"></i>
+                            Переглянути фотоальбом
+                            <span style="opacity:0.85; font-weight:500;">· {{ circle.album.photos.count }} фото</span>
                         </a>
                         {% endif %}
                     </div>
-                </div>
+                </article>
                 {% endfor %}
 
+                <!-- ═══ CTA-банер ═══ -->
+                <div class="cta-banner">
+                    <div class="cta-icon"><i class="bi bi-clipboard-heart-fill"></i></div>
+                    <div class="cta-text">
+                        <h3>Хочете записати дитину на гурток?</h3>
+                        <p>
+                            Зателефонуйте до закладу або зверніться до вихователя — ми
+                            підкажемо, які гуртки підходять віку та інтересам вашої дитини,
+                            та допоможемо з оформленням.
+                        </p>
+                    </div>
+                    <a href="{% url 'main:contacts' %}" class="cta-action">
+                        <i class="bi bi-telephone-fill"></i>Зв'язатися з нами
+                    </a>
+                </div>
+
                 {% else %}
-                <div class="text-center py-5">
+                <div class="text-center py-5 bg-white rounded shadow-sm">
                     <i class="bi bi-stars fs-1 text-muted d-block mb-3"></i>
                     <h4 class="text-muted">Гуртки ще не додані</h4>
                     <p class="text-muted">Додайте гуртки в <a href="/admin/">адмінпанелі</a></p>
@@ -288,7 +585,7 @@
                             <span><i class="bi bi-patch-check me-2 text-primary"></i>Атестація</span>
                             <i class="bi bi-chevron-right text-muted"></i>
                         </a>
-                        <a href="{% url 'circles:circles_page' %}" class="sidebar-link" style="background:#f0f7ff; color:#4A90E2; font-weight:600;">
+                        <a href="{% url 'circles:circles_page' %}" class="sidebar-link active">
                             <span><i class="bi bi-stars me-2 text-primary"></i>Гурткова робота</span>
                             <i class="bi bi-chevron-right text-muted"></i>
                         </a>
@@ -316,4 +613,5 @@
         </div>
     </div>
 </section>
+
 {% endblock %}

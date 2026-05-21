@@ -154,12 +154,52 @@
     @media (max-width: 991px) {
         .hero-slider .carousel-item .slide-img { height: 380px; }
     }
+    /* На мобільному виводимо caption ПІД фото, а не як overlay поверх нього,
+       щоб довгий опис не перекривав картинку. */
+    @media (max-width: 767px) {
+        .hero-slider .carousel-item { position: relative; }
+        .hero-slider .carousel-item .slide-img { height: 240px; }
+        .hero-slider .carousel-caption {
+            position: static !important;
+            background: linear-gradient(135deg, #2C3E50 0%, #1F2A38 100%) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 1.5rem 1.25rem !important;
+            max-width: 100% !important;
+            text-align: center;
+            color: #fff;
+        }
+        .hero-slider .carousel-caption h1 {
+            font-size: 1.4rem !important;
+            margin-bottom: 0.6rem;
+        }
+        .hero-slider .carousel-caption .lead {
+            font-size: 0.95rem !important;
+            line-height: 1.55;
+            margin-bottom: 0.9rem;
+        }
+        /* Індикатори (точки) тримаємо біля нижнього краю фото */
+        .hero-slider .carousel-indicators {
+            bottom: auto;
+            top: 210px;
+            margin: 0;
+        }
+        .hero-slider .carousel-indicators button {
+            width: 8px; height: 8px; border-radius: 50%; margin: 0 4px;
+        }
+        /* Стрілки прокрутки — посередині фото, а не всього слайда */
+        .hero-slider .carousel-control-prev,
+        .hero-slider .carousel-control-next {
+            height: 240px;
+        }
+    }
+
     @media (max-width: 576px) {
         .home-search-form .input-group { flex-wrap: wrap; border-radius: 18px; }
         .home-search-form input { flex: 1 1 auto; min-width: 0; }
         .home-search-form .btn { width: 100%; border-radius: 0 0 16px 16px; padding: 12px; }
-        .hero-slider .carousel-item .slide-img { height: 280px; }
-        .carousel-caption { padding: 1rem 1rem !important; }
     }
 </style>
 {% endblock %}

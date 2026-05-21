@@ -9,6 +9,8 @@ from .models import (
     Page, Slider, Contact,
     ParentsAnnouncement, ParentsDocument, ParentsAdaptationPhoto, ParentsEnrollmentDoc,
     ParentsApplicationSample, StaffMember,
+    AttestationDocument, AttestationStep, AttestationCategory, AttestationLaw,
+    AttestationSettings,
 )
 from news.models import News
 from groups.models import Group
@@ -40,7 +42,22 @@ def page_detail(request, slug):
     if slug == 'staff':
         return _render_staff_page(request, page)
 
+    if slug == 'attestation':
+        return _render_attestation_page(request, page)
+
     return render(request, 'main/page_detail.html', {'page': page})
+
+
+def _render_attestation_page(request, page):
+    """Окремий рендер для сторінки «Атестація» — все редагується через адмінку."""
+    return render(request, 'main/attestation_page.html', {
+        'page': page,
+        'settings':   AttestationSettings.get_solo(),
+        'documents':  AttestationDocument.objects.filter(is_active=True),
+        'steps':      AttestationStep.objects.filter(is_active=True),
+        'categories': AttestationCategory.objects.filter(is_active=True),
+        'laws':       AttestationLaw.objects.filter(is_active=True),
+    })
 
 
 def _render_staff_page(request, page):

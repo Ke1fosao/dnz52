@@ -204,6 +204,135 @@ class ParentsApplicationSample(models.Model):
 # Керівництво / Адміністрація закладу
 # ============================================================================
 
+# ============================================================================
+# Сторінка «Атестація педагогічних працівників»
+# ============================================================================
+
+ACCENT_CHOICES = [
+    ('primary', 'Синій'),
+    ('success', 'Зелений'),
+    ('warning', 'Помаранчевий'),
+    ('info',    'Блакитний'),
+    ('purple',  'Фіолетовий'),
+    ('danger',  'Червоний'),
+]
+
+
+class AttestationDocument(models.Model):
+    """Документ атестаційної комісії (наказ, графік, список тощо) — посилання на файл."""
+    title = models.CharField('Назва документа', max_length=400)
+    subtitle = models.CharField('Короткий опис / уточнення', max_length=300, blank=True)
+    category = models.CharField('Тип документа', max_length=50, default='Документ',
+                                  help_text='Коротка мітка: Наказ, Графік, Список, Строки, Перелік тощо.')
+    url = models.URLField('Посилання на документ',
+                            help_text='URL у Google Drive / Docs або на ваш сайт.')
+    icon = models.CharField('Іконка (Bootstrap Icons)', max_length=80,
+                              default='bi-file-earmark-pdf-fill',
+                              help_text='Наприклад: bi-file-earmark-pdf-fill, bi-calendar-event-fill.')
+    accent = models.CharField('Колір акценту', max_length=20, choices=ACCENT_CHOICES, default='primary')
+    order = models.IntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Активний', default=True)
+
+    class Meta:
+        verbose_name = '01. Документ атестації'
+        verbose_name_plural = '01. Документи атестаційної комісії'
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.title
+
+
+class AttestationStep(models.Model):
+    """Етап проведення атестації — нумерований крок."""
+    title = models.CharField('Назва етапу', max_length=300)
+    description = models.TextField('Пояснення', blank=True)
+    order = models.IntegerField('Порядок (= номер кроку)', default=0)
+    is_active = models.BooleanField('Активний', default=True)
+
+    class Meta:
+        verbose_name = '02. Етап атестації'
+        verbose_name_plural = '02. Етапи проведення атестації'
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.title
+
+
+class AttestationCategory(models.Model):
+    """Кваліфікаційна категорія педагога."""
+    COLOR_CHOICES = [
+        ('cat-1', '🟢 Зелений (Спеціаліст)'),
+        ('cat-2', '🔵 Блакитний (II категорія)'),
+        ('cat-3', '🔷 Синій (I категорія)'),
+        ('cat-4', '🟣 Фіолетовий (Вища)'),
+    ]
+    title = models.CharField('Назва категорії', max_length=200)
+    description = models.TextField('Опис / вимоги',
+                                     help_text='Стисло: умови присвоєння, стаж тощо.')
+    icon = models.CharField('Іконка (Bootstrap Icons)', max_length=80, default='bi-mortarboard',
+                              help_text='Наприклад: bi-mortarboard, bi-star-fill, bi-trophy-fill.')
+    color = models.CharField('Колір', max_length=10, choices=COLOR_CHOICES, default='cat-1')
+    order = models.IntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Активний', default=True)
+
+    class Meta:
+        verbose_name = '03. Кваліфікаційна категорія'
+        verbose_name_plural = '03. Кваліфікаційні категорії'
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.title
+
+
+class AttestationLaw(models.Model):
+    """Нормативний документ, що регулює атестацію."""
+    title = models.CharField('Назва нормативного документа', max_length=400)
+    url = models.URLField('Посилання (необовʼязкове)', blank=True,
+                            help_text='Якщо є — назва стане клікабельною.')
+    order = models.IntegerField('Порядок', default=0)
+    is_active = models.BooleanField('Активний', default=True)
+
+    class Meta:
+        verbose_name = '04. Нормативний документ'
+        verbose_name_plural = '04. Нормативна база атестації'
+        ordering = ['order', 'id']
+
+    def __str__(self):
+        return self.title
+
+
+class AttestationSettings(models.Model):
+    """Загальні налаштування сторінки атестації (текст hero, інтро, контактна підказка)."""
+    hero_lead = models.TextField('Підзаголовок під H1 (hero)',
+                                    default='Атестація — це система заходів, спрямована на всебічне комплексне '
+                                            'оцінювання педагогічної діяльності, за результатами якої '
+                                            'присвоюється кваліфікаційна категорія.')
+    intro_html = RichTextField('Вступний блок (синій, ліворуч)',
+                                  help_text='Підтримує форматування. Зʼявляється угорі сторінки.',
+                                  blank=True)
+    docs_section_subtitle = models.CharField('Підзаголовок секції документів', max_length=200,
+                                               default='2025–2026 навчальний рік')
+    contact_title = models.CharField('Заголовок підказки про контакти', max_length=200,
+                                       default='Маєте запитання щодо атестації?')
+    contact_html = RichTextField('Текст підказки про контакти (жовтий блок)',
+                                    default='<p>Звертайтеся до <strong>вихователя-методиста</strong> закладу — '
+                                            'він допоможе з оформленням документів, поясненням етапів і термінів.</p>',
+                                    blank=True)
+
+    class Meta:
+        verbose_name = '00. Налаштування сторінки'
+        verbose_name_plural = '00. Налаштування сторінки атестації'
+
+    def __str__(self):
+        return 'Налаштування сторінки «Атестація»'
+
+    @classmethod
+    def get_solo(cls):
+        """Повертає єдиний запис налаштувань, створюючи його за потреби."""
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class StaffMember(models.Model):
     """Член керівництва/адміністрації закладу — для сторінки «Керівництво»."""
     full_name = models.CharField('Прізвище, імʼя, по батькові', max_length=200)

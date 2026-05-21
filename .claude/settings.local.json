@@ -69,7 +69,25 @@
       "Bash(curl -s -o /dev/null -w \"\" http://127.0.0.1:8000/specialists/psychologist/)",
       "Bash(curl -s -o /dev/null -w \"\" http://127.0.0.1:8000/page/logoped/)",
       "Bash(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/page/logoped/)",
-      "Bash(echo \"/page/logoped/ => $\\(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/page/logoped/\\)\")"
+      "Bash(echo \"/page/logoped/ => $\\(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/page/logoped/\\)\")",
+      "Read(//c/Users/Dmytro/.claude/projects/F--Project-dnz52/**)",
+      "Bash(ls \"C:\\\\\\\\Users\\\\\\\\Dmytro\\\\\\\\.claude\\\\\\\\projects\\\\\\\\F--Project-dnz52\\\\\\\\memory\\\\\\\\\")",
+      "Read(//c/Users/Dmytro/.claude/projects/**)",
+      "Bash(git -C \"F:/Project/dnz52\" remote -v)",
+      "Bash(git -C \"F:/Project/dnz52\" status --short)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" -c \"from main.templatetags import contacts_tags; print\\('OK'\\)\")",
+      "Bash(F:/Project/dnz52/.venv/Scripts/python.exe -c ' *)",
+      "Bash(tasklist)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill /F /PID 10676)",
+      "Bash(taskkill /F /PID 16816)",
+      "PowerShell(Stop-Process -Id 10676 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Id 16816 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Start-Sleep -Milliseconds 500; Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations main)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations main --empty --name seed_attestation_data)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py migrate)"
     ]
   }
 }

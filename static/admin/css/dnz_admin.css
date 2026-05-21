@@ -1,0 +1,342 @@
+/* =========================================================
+   ЗДО №52 — стилі для дружньої адмінки
+   Підвантажуються через templates/admin/base_site.html
+   ========================================================= */
+
+/* ---- Хедер (синя смужка з логотипом і назвою) ---- */
+#header {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%) !important;
+    color: #fff;
+    padding: 14px 40px;
+    border-bottom: 4px solid #50E3C2;
+}
+
+#site-name a {
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Кругла «52» у логотипі */
+.dnz-logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FFD93D, #FFB000);
+    color: #5C3F00;
+    font-weight: 800;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+#user-tools {
+    font-size: 0.85rem;
+}
+#user-tools a:link, #user-tools a:visited {
+    color: rgba(255,255,255,0.92) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+#user-tools a:hover {
+    color: #FFD93D !important;
+    border-bottom-color: #FFD93D;
+}
+
+/* ---- Welcome-блок на стартовій сторінці ---- */
+.dnz-welcome {
+    background: linear-gradient(135deg, #E5EFFA, #F8FAFD);
+    border-radius: 18px;
+    padding: 1.8rem 2rem;
+    border-left: 5px solid #4A90E2;
+    margin: 0 0 1.8rem 0;
+    box-shadow: 0 4px 18px rgba(74,144,226,0.10);
+}
+.dnz-welcome h1 {
+    margin: 0 0 8px 0;
+    color: #2C3E50;
+    font-size: 1.55rem;
+    font-weight: 800;
+}
+.dnz-welcome-lead {
+    margin: 0;
+    color: #3A4654;
+    font-size: 1.02rem;
+    line-height: 1.65;
+}
+.dnz-welcome-lead strong { color: #2C3E50; }
+
+/* ---- Швидкі дії ---- */
+.dnz-quick-actions {
+    background: #fff;
+    border-radius: 18px;
+    padding: 1.4rem 1.6rem 1.6rem;
+    margin-bottom: 1.6rem;
+    box-shadow: 0 4px 18px rgba(44,62,80,0.07);
+}
+.dnz-quick-actions > h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    color: #2C3E50;
+    font-weight: 700;
+}
+.dnz-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+.dnz-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.2rem 1rem;
+    background: linear-gradient(135deg, #F8FAFD, #EDF4FB);
+    border: 2px solid #E5ECF4;
+    border-radius: 14px;
+    text-decoration: none !important;
+    color: #2C3E50;
+    font-weight: 600;
+    gap: 4px;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+}
+.dnz-action:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(74,144,226,0.20);
+    border-color: #4A90E2;
+    background: #fff;
+}
+.dnz-action .emoji {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+.dnz-action .title {
+    font-size: 0.95rem;
+    color: #2C3E50;
+    font-weight: 700;
+}
+.dnz-action .hint {
+    font-size: 0.78rem;
+    color: #6C7A89;
+    font-weight: 500;
+}
+/* Акцентні кольори для конкретних дій */
+.dnz-action.a-news:hover    { border-color: #4A90E2; }
+.dnz-action.a-gallery:hover { border-color: #FFB84D; }
+.dnz-action.a-reviews:hover { border-color: #FF8FA3; }
+.dnz-action.a-docs:hover    { border-color: #50E3C2; }
+
+/* ---- Підказки ---- */
+.dnz-help {
+    background: linear-gradient(135deg, #FFF9E5, #FFEAB3);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    border-left: 5px solid #FFB84D;
+    margin-bottom: 1.6rem;
+}
+.dnz-help h3 {
+    margin: 0 0 0.6rem 0;
+    color: #7B5500;
+    font-size: 1.05rem;
+}
+.dnz-help ul {
+    margin: 0;
+    padding-left: 1.4rem;
+    color: #5C3F00;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+.dnz-help ul li { margin-bottom: 4px; }
+
+/* ---- Заголовок «Усі розділи» ---- */
+.dnz-sections-header {
+    margin: 1rem 0 1.2rem 0;
+    padding-left: 8px;
+    border-left: 4px solid #4A90E2;
+}
+.dnz-sections-header h3 {
+    margin: 0;
+    color: #2C3E50;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+.dnz-sections-sub {
+    margin: 4px 0 0 0;
+    color: #6C7A89;
+    font-size: 0.9rem;
+}
+
+/* ---- Список застосунків (моделей) — гарніші картки ---- */
+#content-main .app-list .module,
+#content-main .module {
+    border-radius: 14px !important;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.08);
+    border: 1px solid #ECF1F7;
+    margin-bottom: 1.2rem;
+}
+#content-main .app-list .module caption,
+#content-main .module caption {
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%) !important;
+    color: #fff !important;
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+#content-main .app-list .module caption a,
+#content-main .module caption a {
+    color: #fff !important;
+}
+
+/* Кнопки «Додати» / «Змінити» у списку — приємніші */
+.module .addlink {
+    background-image: none;
+    padding: 4px 12px 4px 24px;
+    background: rgba(80,227,194,0.18);
+    border-radius: 14px;
+    color: #1F9B82 !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    position: relative;
+}
+.module .addlink::before {
+    content: "+";
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 800;
+}
+.module .changelink {
+    background-image: none;
+    padding: 4px 14px;
+    background: rgba(74,144,226,0.12);
+    border-radius: 14px;
+    color: #2E6BB8 !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+}
+
+/* ---- Бічна панель «Останні дії» (Recent actions) ---- */
+#content-related .module {
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(44,62,80,0.06);
+    overflow: hidden;
+    border: 1px solid #ECF1F7;
+}
+#content-related .module h2 {
+    background: linear-gradient(135deg, #50E3C2 0%, #34C8A8 100%);
+    color: #fff;
+    padding: 12px 16px;
+    border-radius: 14px 14px 0 0;
+}
+
+/* ---- Хлібні крихти ---- */
+div.breadcrumbs {
+    background: #F8FAFD;
+    color: #2C3E50;
+    padding: 12px 40px;
+    border-bottom: 1px solid #E5ECF4;
+}
+div.breadcrumbs a {
+    color: #4A90E2 !important;
+    font-weight: 600;
+}
+
+/* ---- Кнопки збереження внизу форм ---- */
+.submit-row input.default,
+.submit-row input[name="_save"] {
+    background: linear-gradient(135deg, #4A90E2, #357ABD) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 10px 22px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 14px rgba(74,144,226,0.30) !important;
+}
+.submit-row input.default:hover {
+    background: linear-gradient(135deg, #357ABD, #2A5F9E) !important;
+}
+.submit-row input[name="_addanother"],
+.submit-row input[name="_continue"] {
+    background: rgba(74,144,226,0.12);
+    color: #2E6BB8 !important;
+    border: none !important;
+    padding: 10px 18px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+.submit-row .deletelink {
+    background: rgba(229,103,126,0.12);
+    color: #B23A48 !important;
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* =========================================================
+   Розкладка дашборда — на десктопі двоколонкова через Grid
+   ========================================================= */
+@media (min-width: 992px) {
+    /* Django за замовчуванням задає `body.dashboard #content { width: 600px; }`
+       — перевизначаємо щоб тягнулося на всю доступну ширину. */
+    body.dashboard #content {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        grid-template-areas:
+            "welcome  welcome"
+            "actions  help"
+            "main     related";
+        column-gap: 1.5rem;
+        row-gap: 1.2rem;
+        width: auto !important;
+        max-width: none !important;
+        flex: 1 1 auto !important;
+    }
+    body.dashboard #content > .dnz-welcome       { grid-area: welcome; margin: 0; }
+    body.dashboard #content > .dnz-quick-actions { grid-area: actions; margin: 0; }
+    body.dashboard #content > .dnz-help          { grid-area: help;    margin: 0; align-self: start; }
+    body.dashboard #content > #content-main {
+        grid-area: main;
+        width: 100% !important;
+        float: none !important;
+        margin: 0 !important;
+        min-width: 0;
+    }
+    body.dashboard #content > #content-related {
+        grid-area: related;
+        width: 100% !important;
+        float: none !important;
+        margin: 0 !important;
+    }
+}
+
+/* На вузькому десктопі (992-1199px) — сайдбар трохи вужче */
+@media (min-width: 992px) and (max-width: 1199px) {
+    body.dashboard #content {
+        grid-template-columns: minmax(0, 1fr) 280px;
+    }
+}
+
+/* ---- Мобільний хедер ---- */
+@media (max-width: 767px) {
+    #header { padding: 10px 16px; }
+    #site-name a { font-size: 0.95rem; }
+    .dnz-logo-mark { width: 30px; height: 30px; font-size: 0.85rem; }
+    .dnz-welcome { padding: 1.2rem; }
+    .dnz-welcome h1 { font-size: 1.2rem; }
+    .dnz-welcome-lead { font-size: 0.95rem; }
+    .dnz-quick-actions { padding: 1rem; }
+    .dnz-action { padding: 1rem 0.5rem; }
+    .dnz-action .emoji { font-size: 1.6rem; }
+    div.breadcrumbs { padding: 10px 16px; }
+}

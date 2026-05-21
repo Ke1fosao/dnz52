@@ -1,0 +1,97 @@
+{# Кастомна стартова сторінка адмінки ЗДО №52 — дружня до людей без техдосвіду. #}
+{% extends "admin/index.html" %}
+{% load i18n static log %}
+
+{% block content %}
+{# Верхні блоки: банер + швидкі дії + підказки.
+   На мобільному рендеряться послідовно. На десктопі через CSS Grid:
+   - banner: повна ширина
+   - quick-actions: ліва колонка
+   - help:          права колонка
+#}
+<section class="dnz-welcome">
+    <h1>🎓 Вітаємо у панелі управління!</h1>
+    <p class="dnz-welcome-lead">
+        Тут ви можете додавати <strong>новини, фотографії, документи</strong> та
+        редагувати сторінки сайту ЗДО №52. Усі зміни одразу зʼявляються на сайті.
+    </p>
+</section>
+
+<section class="dnz-quick-actions">
+    <h3>⚡ Найчастіші дії</h3>
+    <div class="dnz-action-grid">
+        <a href="{% url 'admin:news_news_add' %}" class="dnz-action a-news">
+            <span class="emoji">📰</span>
+            <span class="title">Додати новину</span>
+            <span class="hint">Подія, оголошення, фото</span>
+        </a>
+        <a href="{% url 'admin:gallery_galleryalbum_add' %}" class="dnz-action a-gallery">
+            <span class="emoji">🖼️</span>
+            <span class="title">Створити альбом</span>
+            <span class="hint">Для нових фотографій</span>
+        </a>
+        <a href="{% url 'admin:reviews_review_changelist' %}" class="dnz-action a-reviews">
+            <span class="emoji">💬</span>
+            <span class="title">Модерувати відгуки</span>
+            <span class="hint">Опублікувати нові</span>
+        </a>
+        <a href="{% url 'admin:documents_document_add' %}" class="dnz-action a-docs">
+            <span class="emoji">📁</span>
+            <span class="title">Додати документ</span>
+            <span class="hint">PDF, Word тощо</span>
+        </a>
+    </div>
+</section>
+
+<aside class="dnz-help">
+    <h3>💡 Підказки для початку</h3>
+    <ul>
+        <li><strong>Розділи зліва</strong> — кожен це окрема частина сайту. Натисніть на потрібний.</li>
+        <li><strong>«+ Додати»</strong> (зелений плюсик) — створити новий запис.</li>
+        <li><strong>Натисніть на назву</strong> запису, щоб його редагувати.</li>
+        <li>Унизу форми — кнопка <strong>«Зберегти»</strong>. Не забувайте натиснути.</li>
+        <li>Угорі праворуч — «<strong>Дивитись сайт</strong>» — переглянути результат для відвідувачів.</li>
+    </ul>
+</aside>
+
+{# Основний контент — список розділів #}
+<div id="content-main">
+    <div class="dnz-sections-header">
+        <h3>📂 Усі розділи</h3>
+        <p class="dnz-sections-sub">Тут ви знайдете все, що можна редагувати на сайті</p>
+    </div>
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+</div>
+{% endblock %}
+
+{# ═══ Правий сайдбар: тільки «Недавні дії» ═══ #}
+{% block sidebar %}
+<div id="content-related">
+    <div class="module" id="recent-actions-module">
+        <h2>🕒 Недавні дії</h2>
+        <h3>Ваші зміни</h3>
+        {% get_admin_log 10 as admin_log for_user user %}
+        {% if not admin_log %}
+            <p>{% trans 'None available' %}</p>
+        {% else %}
+            <ul class="actionlist">
+                {% for entry in admin_log %}
+                <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                    {% if entry.is_deletion or not entry.get_admin_url %}
+                        {{ entry.object_repr }}
+                    {% else %}
+                        <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                    {% endif %}
+                    <br>
+                    {% if entry.content_type %}
+                        <span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>
+                    {% else %}
+                        <span class="mini quiet">{% trans 'Unknown content' %}</span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

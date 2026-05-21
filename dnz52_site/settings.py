@@ -93,6 +93,7 @@ INSTALLED_APPS = [
     'specialists',
     'circles',
     'reviews',
+    'menu',
 ]
 
 

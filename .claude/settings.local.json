@@ -89,7 +89,9 @@
       "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations main --empty --name seed_attestation_data)",
       "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py migrate)",
       "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations gallery)",
-      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations gallery --empty --name seed_categories)"
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations gallery --empty --name seed_categories)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations menu)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py migrate menu)"
     ]
   }
 }

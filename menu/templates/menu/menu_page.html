@@ -1,0 +1,462 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Меню харчування | ЗДО №52 Рівне{% endblock %}
+{% block meta_description %}Меню харчування ЗДО №52 — сьогоднішнє меню та меню на тиждень: сніданок, обід, полуденок, вечеря.{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* === Hero === */
+    .page-hero {
+        background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        padding: 60px 0 40px;
+        position: relative;
+        overflow: hidden;
+    }
+    .page-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 88% 25%, rgba(255,255,255,0.18), transparent 50%);
+    }
+    .page-hero .container { position: relative; z-index: 1; }
+    .breadcrumb-item a { color: rgba(255,255,255,0.85); text-decoration: none; }
+    .breadcrumb-item.active { color: white; }
+    .breadcrumb-item + .breadcrumb-item::before { color: rgba(255,255,255,0.6); }
+    .hero-lead { color: rgba(255,255,255,0.92); font-size: 1.05rem; line-height: 1.6; }
+
+    /* === Сьогоднішнє меню (велика картка) === */
+    .today-card {
+        background: linear-gradient(135deg, #FFF9E5 0%, #FFEAB3 100%);
+        border-radius: 22px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 38px rgba(255,184,77,0.22);
+        margin-bottom: 2.5rem;
+        position: relative;
+        overflow: hidden;
+        border-left: 6px solid #FFB84D;
+    }
+    .today-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 360px;
+        height: 360px;
+        background: radial-gradient(circle, rgba(255,255,255,0.55), transparent 70%);
+        pointer-events: none;
+    }
+    .today-card-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 1rem;
+    }
+    .today-card-header .day-emoji {
+        font-size: 2rem;
+        line-height: 1;
+    }
+    .today-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #FFB84D, #FF9F1A);
+        color: #fff;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.4rem;
+        box-shadow: 0 4px 12px rgba(255,184,77,0.40);
+    }
+    .today-card-title { margin: 0; color: #5C3F00; font-weight: 800; font-size: 1.5rem; }
+    .today-card-date  { color: #7B5500; font-size: 0.95rem; margin-top: 2px; }
+    .today-meals {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.9rem;
+        position: relative;
+    }
+    .meal-block {
+        background: rgba(255,255,255,0.85);
+        border-radius: 14px;
+        padding: 0.9rem 1.1rem;
+        border-left: 4px solid;
+    }
+    .meal-block.m-breakfast        { border-color: #FF9F1A; }
+    .meal-block.m-second-breakfast { border-color: #FFD93D; }
+    .meal-block.m-lunch            { border-color: #E5677E; }
+    .meal-block.m-snack            { border-color: #50E3C2; }
+    .meal-block.m-dinner           { border-color: #B388FF; }
+    .meal-label {
+        font-size: 0.74rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #7B5500;
+        margin-bottom: 4px;
+    }
+    .meal-text {
+        white-space: pre-line;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #2C3E50;
+        margin: 0;
+    }
+    .today-note {
+        margin-top: 1.2rem;
+        padding: 0.85rem 1.1rem;
+        background: rgba(255,255,255,0.7);
+        border-radius: 12px;
+        color: #5C3F00;
+        font-style: italic;
+        font-size: 0.93rem;
+        position: relative;
+    }
+
+    /* === Навігація тижнями === */
+    .week-nav {
+        background: #fff;
+        border-radius: 16px;
+        padding: 0.85rem 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        box-shadow: 0 4px 18px rgba(44,62,80,0.07);
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+    .week-nav-title {
+        font-weight: 700;
+        color: #2C3E50;
+        font-size: 1.05rem;
+        flex-grow: 1;
+        text-align: center;
+    }
+    .week-nav-title small { display: block; font-weight: 500; color: #6C7A89; font-size: 0.82rem; margin-top: 2px; }
+    .week-nav-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #F0F4F9;
+        color: #4A90E2;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: background 0.2s, transform 0.2s;
+        flex-shrink: 0;
+    }
+    .week-nav-arrow:hover {
+        background: #4A90E2;
+        color: #fff;
+        transform: scale(1.05);
+    }
+    .week-nav-today {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #4A90E2, #357ABD);
+        color: #fff;
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .week-nav-today:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(74,144,226,0.30);
+    }
+
+    /* === Сітка днів тижня === */
+    .week-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 1rem;
+    }
+    .day-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 4px 16px rgba(44,62,80,0.06);
+        overflow: hidden;
+        border: 2px solid #ECF1F7;
+        transition: border-color 0.2s, transform 0.2s;
+    }
+    .day-card:hover {
+        border-color: #C8E0F8;
+        transform: translateY(-3px);
+    }
+    .day-card.is-today {
+        border-color: #FFB84D;
+        box-shadow: 0 10px 30px rgba(255,184,77,0.22);
+    }
+    .day-card.is-past { opacity: 0.68; }
+    .day-card-header {
+        padding: 14px 16px;
+        background: linear-gradient(135deg, #F8FAFD, #EDF4FB);
+        border-bottom: 1px solid #ECF1F7;
+        position: relative;
+    }
+    .day-card.is-today .day-card-header {
+        background: linear-gradient(135deg, #FFB84D, #FF9F1A);
+        color: #fff;
+    }
+    .day-card-weekday {
+        font-weight: 800;
+        font-size: 1.02rem;
+        color: #2C3E50;
+        margin: 0;
+    }
+    .day-card.is-today .day-card-weekday { color: #fff; }
+    .day-card-date {
+        font-size: 0.82rem;
+        color: #6C7A89;
+        margin-top: 2px;
+    }
+    .day-card.is-today .day-card-date { color: rgba(255,255,255,0.9); }
+    .day-card-today-mark {
+        position: absolute;
+        top: 10px;
+        right: 12px;
+        background: rgba(255,255,255,0.30);
+        color: #fff;
+        font-size: 0.68rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .day-card-body { padding: 12px 16px 16px; }
+    .day-meal {
+        margin-bottom: 0.7rem;
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+    .day-meal:last-child { margin-bottom: 0; }
+    .day-meal-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #8B98AB;
+        margin-bottom: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .day-meal-text {
+        margin: 0;
+        color: #3A4654;
+        white-space: pre-line;
+    }
+    .day-no-menu {
+        text-align: center;
+        padding: 1.2rem 0.5rem;
+        color: #B7C8DA;
+        font-size: 0.85rem;
+        font-style: italic;
+    }
+    .day-no-menu i { font-size: 1.4rem; display: block; margin-bottom: 4px; }
+
+    /* === Інформаційний блок === */
+    .info-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem 1.8rem;
+        box-shadow: 0 4px 18px rgba(44,62,80,0.07);
+        margin-top: 2rem;
+        border-left: 5px solid #50E3C2;
+    }
+    .info-card h3 { margin: 0 0 0.5rem; color: #2C3E50; font-size: 1.1rem; }
+    .info-card p { margin: 0; color: #3A4654; line-height: 1.65; font-size: 0.95rem; }
+
+    @media (max-width: 991px) {
+        .week-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 576px) {
+        .week-grid { grid-template-columns: 1fr; }
+        .today-meals { grid-template-columns: 1fr; }
+        .week-nav { padding: 12px; }
+        .week-nav-arrow { width: 36px; height: 36px; font-size: 1rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="page-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-3">
+                <li class="breadcrumb-item"><a href="{% url 'main:home' %}"><i class="bi bi-house"></i> Головна</a></li>
+                <li class="breadcrumb-item active">Меню харчування</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-2"><i class="bi bi-egg-fried me-2"></i>Меню харчування</h1>
+        <p class="hero-lead mb-0">
+            Що сьогодні і протягом тижня готує наша кухня для діток ЗДО №52.
+            Меню оновлюється щоденно — слідкуйте, щоб знати раціон вашої дитини.
+        </p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+
+        <!-- Сьогоднішнє меню — велика картка -->
+        {% if today_menu and today_menu.has_any_meal %}
+        <div class="today-card">
+            <div class="today-card-header">
+                <span class="day-emoji">🍽️</span>
+                <div style="position: relative;">
+                    <span class="today-badge">Сьогодні</span>
+                    <h2 class="today-card-title">Меню на сьогодні</h2>
+                    <div class="today-card-date">{{ today|date:"l, j E Y" }}</div>
+                </div>
+            </div>
+            <div class="today-meals">
+                {% if today_menu.breakfast %}
+                <div class="meal-block m-breakfast">
+                    <div class="meal-label">🥣 Сніданок</div>
+                    <p class="meal-text">{{ today_menu.breakfast }}</p>
+                </div>
+                {% endif %}
+                {% if today_menu.second_breakfast %}
+                <div class="meal-block m-second-breakfast">
+                    <div class="meal-label">🍎 II сніданок</div>
+                    <p class="meal-text">{{ today_menu.second_breakfast }}</p>
+                </div>
+                {% endif %}
+                {% if today_menu.lunch %}
+                <div class="meal-block m-lunch">
+                    <div class="meal-label">🍲 Обід</div>
+                    <p class="meal-text">{{ today_menu.lunch }}</p>
+                </div>
+                {% endif %}
+                {% if today_menu.snack %}
+                <div class="meal-block m-snack">
+                    <div class="meal-label">🥨 Полуденок</div>
+                    <p class="meal-text">{{ today_menu.snack }}</p>
+                </div>
+                {% endif %}
+                {% if today_menu.dinner %}
+                <div class="meal-block m-dinner">
+                    <div class="meal-label">🥛 Вечеря</div>
+                    <p class="meal-text">{{ today_menu.dinner }}</p>
+                </div>
+                {% endif %}
+            </div>
+            {% if today_menu.note %}
+            <div class="today-note">
+                <i class="bi bi-info-circle-fill me-2 text-warning"></i>{{ today_menu.note }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Навігація по тижнях -->
+        <div class="week-nav">
+            <a href="?date={{ prev_week_date }}" class="week-nav-arrow" aria-label="Попередній тиждень">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+
+            <div class="week-nav-title">
+                <i class="bi bi-calendar-week me-1"></i>
+                Тиждень: {{ week_start|date:"j E" }} — {{ week_end|date:"j E Y" }}
+                <small>
+                    {% if is_current_week %}поточний тиждень{% else %}іншого тижня{% endif %}
+                </small>
+            </div>
+
+            {% if not is_current_week %}
+            <a href="?date={{ today_iso }}" class="week-nav-today">
+                <i class="bi bi-calendar-check"></i>До цього тижня
+            </a>
+            {% endif %}
+
+            <a href="?date={{ next_week_date }}" class="week-nav-arrow" aria-label="Наступний тиждень">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <!-- Сітка днів (Пн-Пт) -->
+        <div class="week-grid">
+            {% for day in days %}
+                {% if not day.is_weekend %}
+                <div class="day-card {% if day.is_today %}is-today{% endif %} {% if day.is_past and not day.is_today %}is-past{% endif %}">
+                    <div class="day-card-header">
+                        {% if day.is_today %}<span class="day-card-today-mark">сьогодні</span>{% endif %}
+                        <p class="day-card-weekday">{{ day.weekday }}</p>
+                        <div class="day-card-date">{{ day.date|date:"d.m.Y" }}</div>
+                    </div>
+                    <div class="day-card-body">
+                        {% if day.menu and day.menu.has_any_meal %}
+                            {% if day.menu.breakfast %}
+                            <div class="day-meal">
+                                <div class="day-meal-label">🥣 Сніданок</div>
+                                <p class="day-meal-text">{{ day.menu.breakfast }}</p>
+                            </div>
+                            {% endif %}
+                            {% if day.menu.second_breakfast %}
+                            <div class="day-meal">
+                                <div class="day-meal-label">🍎 II сніданок</div>
+                                <p class="day-meal-text">{{ day.menu.second_breakfast }}</p>
+                            </div>
+                            {% endif %}
+                            {% if day.menu.lunch %}
+                            <div class="day-meal">
+                                <div class="day-meal-label">🍲 Обід</div>
+                                <p class="day-meal-text">{{ day.menu.lunch }}</p>
+                            </div>
+                            {% endif %}
+                            {% if day.menu.snack %}
+                            <div class="day-meal">
+                                <div class="day-meal-label">🥨 Полуденок</div>
+                                <p class="day-meal-text">{{ day.menu.snack }}</p>
+                            </div>
+                            {% endif %}
+                            {% if day.menu.dinner %}
+                            <div class="day-meal">
+                                <div class="day-meal-label">🥛 Вечеря</div>
+                                <p class="day-meal-text">{{ day.menu.dinner }}</p>
+                            </div>
+                            {% endif %}
+                            {% if day.menu.note %}
+                            <div class="day-meal" style="border-top:1px dashed #ECF1F7; padding-top:8px; margin-top:8px;">
+                                <small class="text-muted"><i class="bi bi-info-circle me-1"></i>{{ day.menu.note }}</small>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        <div class="day-no-menu">
+                            <i class="bi bi-egg"></i>
+                            Меню ще не додано
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- Інформаційний блок -->
+        <div class="info-card">
+            <h3><i class="bi bi-shield-check me-2 text-success"></i>Як ми готуємо</h3>
+            <p>
+                Меню складається відповідно до затверджених норм харчування дітей дошкільного віку.
+                Усі страви готуються щодня з якісних продуктів. Якщо у вашої дитини є алергія
+                або особливі вимоги до харчування — повідомте про це медичну сестру закладу.
+            </p>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

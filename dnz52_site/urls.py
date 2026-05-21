@@ -33,6 +33,7 @@ urlpatterns = [
     path('specialists/', include('specialists.urls')),
     path('circles/', include('circles.urls')),
     path('reviews/', include('reviews.urls')),
+    path('menu/', include('menu.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
 ]
 

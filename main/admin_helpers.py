@@ -26,8 +26,9 @@ SECTIONS = [
         'name': '🖼️ Фотогалерея',
         'description': 'Альбоми і фото для розділу «Галерея»',
         'models': [
-            ('gallery', 'GalleryAlbum', 'Альбоми'),
-            ('gallery', 'GalleryPhoto', 'Окремі фото'),
+            ('gallery', 'GalleryAlbum',    'Альбоми'),
+            ('gallery', 'GalleryCategory', 'Категорії альбомів'),
+            ('gallery', 'GalleryPhoto',    'Окремі фото'),
         ],
     },
     {

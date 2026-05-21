@@ -87,7 +87,9 @@
       "PowerShell(Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }; Start-Sleep -Milliseconds 500; Get-NetTCPConnection -LocalPort 8000 -State Listen -ErrorAction SilentlyContinue | Measure-Object | Select-Object -ExpandProperty Count)",
       "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations main)",
       "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations main --empty --name seed_attestation_data)",
-      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py migrate)"
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py migrate)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations gallery)",
+      "Bash(\"F:/Project/dnz52/.venv/Scripts/python.exe\" manage.py makemigrations gallery --empty --name seed_categories)"
     ]
   }
 }

@@ -380,103 +380,45 @@
 
         </div>
 
-        <!-- Карта + сайдбар -->
-        <div class="row g-4">
-
-            <div class="col-lg-8">
-                <div class="map-wrap">
-                    {% render_map_embed contact.map_embed as map_html %}
-                    {% if map_html %}
-                        {{ map_html }}
-                    {% else %}
-                        <div class="map-placeholder">
-                            <i class="bi bi-map"></i>
-                            <h5 class="mb-2">Карту ще не додано</h5>
-                            <small class="text-muted">Адміністратор може додати embed-код Google Maps у адмінпанелі.</small>
-                        </div>
-                    {% endif %}
+        <!-- Карта на всю ширину -->
+        <div class="map-wrap">
+            {% render_map_embed contact.map_embed as map_html %}
+            {% if map_html %}
+                {{ map_html }}
+            {% else %}
+                <div class="map-placeholder">
+                    <i class="bi bi-map"></i>
+                    <h5 class="mb-2">Карту ще не додано</h5>
+                    <small class="text-muted">Адміністратор може додати embed-код Google Maps у адмінпанелі.</small>
                 </div>
+            {% endif %}
+        </div>
 
-                <!-- Швидкі дії під картою -->
-                <div class="quick-actions">
-                    {% for phone in contact.phone|split_phones %}
-                        {% if forloop.first %}
-                        <a href="{{ phone|tel_link }}" class="quick-action">
-                            <i class="bi bi-telephone-fill"></i>Зателефонувати
-                        </a>
-                        {% endif %}
-                    {% endfor %}
-                    <a href="mailto:{{ contact.email }}" class="quick-action">
-                        <i class="bi bi-envelope-fill"></i>Написати email
-                    </a>
-                    <a href="https://www.google.com/maps/dir/?api=1&destination={{ contact.address|urlencode }}"
-                       target="_blank" rel="noopener" class="quick-action">
-                        <i class="bi bi-signpost-2-fill"></i>Прокласти маршрут
-                    </a>
-                </div>
-
-                <!-- Підказка про під'їзд -->
-                <div class="transport-note">
-                    <i class="bi bi-info-circle-fill"></i>
-                    <div>
-                        <strong>Підказка для гостей:</strong> якщо вперше відвідуєте заклад,
-                        радимо скористатися кнопкою «Прокласти маршрут» — Google Maps відкриється
-                        з вашого поточного місця і покаже найзручніший шлях.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Сайдбар: соцмережі + як знайти -->
-            <div class="col-lg-4 d-flex flex-column gap-4">
-
-                <!-- Адреса з кнопкою -->
-                <div class="info-block">
-                    <div class="info-block-header">
-                        <i class="bi bi-signpost-2 me-2"></i>Як нас знайти
-                    </div>
-                    <div class="info-block-body">
-                        <p class="mb-3" style="font-size:0.95rem; color:#3A4654; line-height:1.6;">
-                            <i class="bi bi-geo-alt-fill text-primary me-2"></i>{{ contact.address }}
-                        </p>
-                        <a href="https://www.google.com/maps?q={{ contact.address|urlencode }}"
-                           target="_blank" rel="noopener" class="btn btn-primary w-100">
-                            <i class="bi bi-map me-2"></i>Відкрити в Google Maps
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Соцмережі -->
-                {% if contact.facebook_url or contact.instagram_url or contact.youtube_url %}
-                <div class="info-block">
-                    <div class="info-block-header accent-warning">
-                        <i class="bi bi-share-fill me-2"></i>Ми в соцмережах
-                    </div>
-                    <div class="info-block-body d-flex flex-column gap-2">
-                        {% if contact.facebook_url %}
-                        <a href="{{ contact.facebook_url }}" target="_blank" rel="noopener" class="social-btn social-facebook">
-                            <i class="bi bi-facebook"></i>
-                            <span class="label">Facebook</span>
-                            <i class="bi bi-arrow-right arrow"></i>
-                        </a>
-                        {% endif %}
-                        {% if contact.instagram_url %}
-                        <a href="{{ contact.instagram_url }}" target="_blank" rel="noopener" class="social-btn social-instagram">
-                            <i class="bi bi-instagram"></i>
-                            <span class="label">Instagram</span>
-                            <i class="bi bi-arrow-right arrow"></i>
-                        </a>
-                        {% endif %}
-                        {% if contact.youtube_url %}
-                        <a href="{{ contact.youtube_url }}" target="_blank" rel="noopener" class="social-btn social-youtube">
-                            <i class="bi bi-youtube"></i>
-                            <span class="label">YouTube</span>
-                            <i class="bi bi-arrow-right arrow"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                </div>
+        <!-- Швидкі дії під картою -->
+        <div class="quick-actions">
+            {% for phone in contact.phone|split_phones %}
+                {% if forloop.first %}
+                <a href="{{ phone|tel_link }}" class="quick-action">
+                    <i class="bi bi-telephone-fill"></i>Зателефонувати
+                </a>
                 {% endif %}
+            {% endfor %}
+            <a href="mailto:{{ contact.email }}" class="quick-action">
+                <i class="bi bi-envelope-fill"></i>Написати email
+            </a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination={{ contact.address|urlencode }}"
+               target="_blank" rel="noopener" class="quick-action">
+                <i class="bi bi-signpost-2-fill"></i>Прокласти маршрут
+            </a>
+        </div>
 
+        <!-- Підказка про під'їзд -->
+        <div class="transport-note">
+            <i class="bi bi-info-circle-fill"></i>
+            <div>
+                <strong>Підказка для гостей:</strong> якщо вперше відвідуєте заклад,
+                радимо скористатися кнопкою «Прокласти маршрут» — Google Maps відкриється
+                з вашого поточного місця і покаже найзручніший шлях.
             </div>
         </div>
 

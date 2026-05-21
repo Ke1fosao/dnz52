@@ -1,6 +1,7 @@
 import time
 from django.shortcuts import render
 from django.db.models import Avg
+from django.core.paginator import Paginator
 from .models import Review
 
 
@@ -13,6 +14,9 @@ SORT_ORDERS = {
 
 # Мінімальний інтервал між відгуками з однієї сесії (захист від спаму)
 REVIEW_COOLDOWN_SECONDS = 60
+
+# Скільки відгуків показувати на сторінці
+REVIEWS_PER_PAGE = 6
 
 
 def reviews_page(request):
@@ -86,8 +90,14 @@ def reviews_page(request):
         sort = 'newest'
     qs = qs.order_by(*SORT_ORDERS[sort])
 
+    # Пагінація
+    paginator = Paginator(qs, REVIEWS_PER_PAGE)
+    page_num = request.GET.get('page')
+    page_obj = paginator.get_page(page_num)
+
     return render(request, 'reviews/reviews_page.html', {
-        'reviews':        qs,
+        'reviews':        page_obj,         # тепер це Page-об'єкт із поточними відгуками
+        'page_obj':       page_obj,         # для пагінатора у шаблоні
         'stats':          stats,
         'submitted':      submitted,
         'cooldown_blocked': cooldown_blocked,

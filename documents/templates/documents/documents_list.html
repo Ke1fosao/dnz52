@@ -43,31 +43,76 @@
         color: white;
     }
 
-    /* Секція категорії */
+    /* Секція категорії — згортається */
     .category-section {
-        margin-bottom: 40px;
+        margin-bottom: 18px;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 3px 14px rgba(44,62,80,0.06);
+        overflow: hidden;
+        border: 1px solid #ECF1F7;
     }
     .category-header {
         display: flex;
         align-items: center;
         gap: 12px;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #e8f4fd;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #F8FAFD, #EDF4FB);
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s;
+        border: none;
+        width: 100%;
+        text-align: left;
+        font-family: inherit;
+    }
+    .category-header:hover {
+        background: linear-gradient(135deg, #EDF4FB, #DCE9F7);
+    }
+    .category-header .folder-icon {
+        font-size: 1.3rem;
+        color: #4A90E2;
+        flex-shrink: 0;
+        transition: transform 0.25s;
     }
     .category-header h4 {
         margin: 0;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #2C3E50;
+        flex-grow: 1;
     }
     .category-count {
-        background: #e8f4fd;
-        color: #4A90E2;
-        font-size: 0.78rem;
-        font-weight: 600;
-        padding: 3px 10px;
-        border-radius: 12px;
+        background: #4A90E2;
+        color: #fff;
+        font-size: 0.76rem;
+        font-weight: 700;
+        padding: 3px 11px;
+        border-radius: 14px;
+    }
+    .category-header .chevron {
+        font-size: 1.1rem;
+        color: #6C7A89;
+        transition: transform 0.25s;
+        flex-shrink: 0;
+    }
+    /* Розгорнута категорія — повертаємо chevron */
+    .category-section.open .category-header .chevron {
+        transform: rotate(180deg);
+    }
+    .category-section.open .category-header .folder-icon::before {
+        /* Замінюємо іконку папки на «папка-відкрита» через CSS-клас змінюється у JS */
+    }
+    /* Контейнер з документами — анімація розгортання */
+    .category-body {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s ease;
+        padding: 0 14px;
+    }
+    .category-section.open .category-body {
+        max-height: 6000px;     /* достатньо великий запас */
+        padding: 14px;
     }
 
     /* Рядок документа */
@@ -133,25 +178,38 @@
         gap: 8px;
         flex-shrink: 0;
     }
-    .btn-download {
+    .btn-action {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 7px 16px;
-        background: #4A90E2;
-        color: white;
+        padding: 7px 14px;
         border-radius: 8px;
         font-size: 0.83rem;
         font-weight: 600;
         text-decoration: none;
-        transition: background 0.2s, transform 0.2s;
+        transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
         border: none;
         cursor: pointer;
+    }
+    .btn-view {
+        background: #fff;
+        color: #4A90E2;
+        border: 2px solid #4A90E2;
+    }
+    .btn-view:hover {
+        background: #EDF4FB;
+        color: #357ABD;
+        transform: translateY(-1px);
+    }
+    .btn-download {
+        background: #4A90E2;
+        color: white;
     }
     .btn-download:hover {
         background: #357ABD;
         color: white;
         transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(74,144,226,0.30);
     }
 
     .no-docs { padding: 80px 0; }
@@ -247,14 +305,14 @@
         <!-- Документи по категоріях -->
         {% if categories %}
             {% for category in categories %}
-            {% with cat_docs=documents|dictsort:"title" %}
             <div class="category-section" data-cat-section="{{ category.slug }}" id="section-{{ category.slug }}">
-                <div class="category-header">
-                    <i class="bi bi-folder-fill text-primary fs-5"></i>
+                <button type="button" class="category-header" aria-expanded="false" aria-controls="docs-{{ category.slug }}">
+                    <i class="bi bi-folder-fill folder-icon"></i>
                     <h4>{{ category.name }}</h4>
                     <span class="category-count" id="count-{{ category.slug }}">0</span>
-                </div>
-                <div id="docs-{{ category.slug }}">
+                    <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+                </button>
+                <div class="category-body" id="docs-{{ category.slug }}">
                     {% for doc in documents %}
                     {% if doc.category and doc.category.slug == category.slug %}
                     <div class="doc-row" data-cat="{{ category.slug }}" data-title="{{ doc.title|lower }}">
@@ -282,8 +340,13 @@
                             </div>
                         </div>
                         <div class="doc-actions">
+                            <a href="{{ doc.file.url }}" target="_blank" rel="noopener"
+                               class="btn-action btn-view" title="Переглянути в новій вкладці">
+                                <i class="bi bi-eye"></i>
+                                <span class="d-none d-sm-inline">Переглянути</span>
+                            </a>
                             <a href="{% url 'documents:document_download' doc.pk %}"
-                               class="btn-download">
+                               class="btn-action btn-download" title="Завантажити файл">
                                 <i class="bi bi-download"></i>
                                 <span class="d-none d-sm-inline">Завантажити</span>
                             </a>
@@ -293,18 +356,19 @@
                     {% endfor %}
                 </div>
             </div>
-            {% endwith %}
             {% endfor %}
 
             <!-- Документи без категорії -->
-            {% for doc in documents %}
-            {% if not doc.category %}
-            {% if forloop.first %}
+            {% with uncategorized=documents|dictsort:"title" %}
+            {% for doc in documents %}{% if not doc.category %}{% if forloop.first %}
             <div class="category-section" data-cat-section="other" id="section-other">
-                <div class="category-header">
-                    <i class="bi bi-folder text-secondary fs-5"></i>
+                <button type="button" class="category-header" aria-expanded="false" aria-controls="docs-other">
+                    <i class="bi bi-folder folder-icon" style="color:#6C7A89;"></i>
                     <h4>Інше</h4>
-                </div>
+                    <span class="category-count" id="count-other">0</span>
+                    <i class="bi bi-chevron-down chevron" aria-hidden="true"></i>
+                </button>
+                <div class="category-body" id="docs-other">
             {% endif %}
                 <div class="doc-row" data-cat="other" data-title="{{ doc.title|lower }}">
                     <div class="doc-icon other"><i class="bi bi-file-earmark"></i></div>
@@ -317,19 +381,24 @@
                         </div>
                     </div>
                     <div class="doc-actions">
-                        <a href="{% url 'documents:document_download' doc.pk %}" class="btn-download">
+                        <a href="{{ doc.file.url }}" target="_blank" rel="noopener" class="btn-action btn-view">
+                            <i class="bi bi-eye"></i>
+                            <span class="d-none d-sm-inline">Переглянути</span>
+                        </a>
+                        <a href="{% url 'documents:document_download' doc.pk %}" class="btn-action btn-download">
                             <i class="bi bi-download"></i>
                             <span class="d-none d-sm-inline">Завантажити</span>
                         </a>
                     </div>
                 </div>
-            {% if forloop.last %}</div>{% endif %}
-            {% endif %}
-            {% endfor %}
+            {% if forloop.last %}</div></div>{% endif %}
+            {% endif %}{% endfor %}
+            {% endwith %}
 
         {% else %}
             <!-- Без категорій — просто список -->
-            <div class="category-section">
+            <div class="category-section open">
+                <div class="category-body" style="max-height:none; padding: 14px;">
                 {% for doc in documents %}
                 <div class="doc-row" data-cat="all" data-title="{{ doc.title|lower }}">
                     <div class="doc-icon other">
@@ -349,13 +418,18 @@
                         </div>
                     </div>
                     <div class="doc-actions">
-                        <a href="{% url 'documents:document_download' doc.pk %}" class="btn-download">
+                        <a href="{{ doc.file.url }}" target="_blank" rel="noopener" class="btn-action btn-view">
+                            <i class="bi bi-eye"></i>
+                            <span class="d-none d-sm-inline">Переглянути</span>
+                        </a>
+                        <a href="{% url 'documents:document_download' doc.pk %}" class="btn-action btn-download">
                             <i class="bi bi-download"></i>
                             <span class="d-none d-sm-inline">Завантажити</span>
                         </a>
                     </div>
                 </div>
                 {% endfor %}
+                </div>
             </div>
         {% endif %}
 
@@ -386,6 +460,21 @@ document.addEventListener('DOMContentLoaded', function() {
         if (rows.length === 0) section.style.display = 'none';
     });
 
+    // ── Розгортання/згортання категорій ──
+    document.querySelectorAll('.category-header').forEach(header => {
+        header.addEventListener('click', function() {
+            const section = this.closest('.category-section');
+            const isOpen = section.classList.toggle('open');
+            this.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            // Поміняти іконку папки на «відкриту» / «закриту»
+            const folder = this.querySelector('.folder-icon');
+            if (folder) {
+                folder.classList.toggle('bi-folder-fill', !isOpen);
+                folder.classList.toggle('bi-folder2-open', isOpen);
+            }
+        });
+    });
+
     // ── Фільтр по категоріях ──
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -397,7 +486,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (cat === 'all') {
                     section.classList.remove('hidden');
                 } else {
-                    section.classList.toggle('hidden', section.dataset.catSection !== cat);
+                    const match = section.dataset.catSection === cat;
+                    section.classList.toggle('hidden', !match);
+                    // При виборі конкретної категорії — одразу її розгортаємо
+                    if (match) {
+                        section.classList.add('open');
+                        const h = section.querySelector('.category-header');
+                        if (h) h.setAttribute('aria-expanded', 'true');
+                    }
                 }
             });
 
@@ -425,10 +521,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (show) visible++;
         });
 
-        // Сховати порожні секції після пошуку
+        // Сховати порожні секції + автоматично розгорнути ті, де є результати пошуку
         document.querySelectorAll('.category-section').forEach(section => {
             const hasVisible = section.querySelectorAll('.doc-row:not(.hidden)').length > 0;
             section.classList.toggle('hidden', !hasVisible);
+            if (query && hasVisible) {
+                section.classList.add('open');
+            } else if (!query) {
+                // Без пошуку — згортаємо всі назад
+                section.classList.remove('open');
+            }
         });
 
         document.getElementById('docCount').innerHTML =

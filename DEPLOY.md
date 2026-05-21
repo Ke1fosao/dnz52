@@ -268,13 +268,18 @@ python manage.py loaddata data.json
 
 Коли локально щось змінили і хочете щоб з'явилось на сайті:
 
-### На локальному ПК
+### На локальному ПК (PowerShell)
 ```powershell
 cd F:\Project\dnz52
-git add .
-git commit -m "Опис того що змінили (наприклад: 'Додано нову новину')"
+git status              # перевіряємо що готується до коміту
+git add -A              # додаємо всі зміни (.gitignore ігнорує секрети)
+git commit -m "Опис того що змінили (наприклад: 'Додано меню на тиждень')"
 git push
 ```
+
+> ⚠️ Якщо `git add -A` додає файли яких не повинно бути (наприклад `.env`,
+> `db.sqlite3`, `media/`) — спочатку перевірте, чи вони у `.gitignore`,
+> і прибравши через `git reset <шлях>`.
 
 ### На PythonAnywhere (Bash)
 ```bash
@@ -282,17 +287,22 @@ cd ~/dnz52
 git pull
 workon dnz52-venv
 
-# Якщо змінювали моделі:
+# Завжди безпечно запускати — якщо нових міграцій немає, нічого не зробить:
 python manage.py migrate
 
-# Якщо змінювали статику/CSS/SVG:
+# Завжди безпечно — підхопить нові CSS/JS/SVG/іконки:
 python manage.py collectstatic --noinput
 
-# Якщо встановили нові пакети у requirements.txt:
+# Якщо у requirements.txt додані нові пакети:
 pip install -r requirements.txt
 ```
 
 Потім **Web → 🔄 Reload**.
+
+> 💡 Маленька шпаргалка: команди `migrate` і `collectstatic` краще
+> запускати **завжди** після `git pull`. Якщо змін немає — Django нічого
+> не робить. Якщо є — підхопить. Це безпечніше ніж намагатися згадати,
+> чи ви змінювали моделі/статику.
 
 ### На Render
 Достатньо `git push` — Render автоматично перезбере і перезапустить.
